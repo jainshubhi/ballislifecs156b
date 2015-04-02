@@ -1,3 +1,8 @@
-# ballislifecs156b
+# CS 156b: The Netflix Challenge
+Our team, Ball is Life:
+- Ritvik Mishra
+- Dylan Schultz
+- Shubhi Jain
 
-Download the data yourself in a directory named data.
+## Our Strategy
+Nothing.
