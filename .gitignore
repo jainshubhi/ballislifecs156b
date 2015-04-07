@@ -1,6 +1,9 @@
 ## Our own gitignores:
 # data
 data/
+# executables and object files
+bin/
+obj/
 
 ## C++ gitignores:
 # Compiled Object files
