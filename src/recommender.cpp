@@ -1,7 +1,10 @@
 #include "recommender.hpp"
 
+#define DATA_FILE "data/mu/all.dta"
+#define QUAL_FILE "data/mu/qual.dta"
+
 MatrixXd read_data() {
-    std::ifstream data("../data/mu/all.dta");
+    std::ifstream data(DATA_FILE);
     MatrixXd vals(102416306, 4);
     std::string line;
     int row = 0, col = 0;
@@ -20,7 +23,7 @@ MatrixXd read_data() {
 }
 
 MatrixXd read_qual() {
-    std::ifstream data("../data/mu/qual.dta");
+    std::ifstream data(QUAL_FILE);
     MatrixXd vals(2749898, 3);
     std::string line;
     int row = 0, col = 0;
