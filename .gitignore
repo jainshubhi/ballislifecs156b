@@ -4,6 +4,8 @@ data/
 # executables and object files
 bin/
 obj/
+# DS store thing
+.DS_store
 
 ## C++ gitignores:
 # Compiled Object files
