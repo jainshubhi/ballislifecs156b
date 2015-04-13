@@ -1,14 +1,5 @@
 #include "recommender.hpp"
 
-#define DATA_FILE    "data/mu/all.dta"
-#define QUAL_FILE    "data/mu/qual.dta"
-#define DATA_SIZE    102416306
-#define QUAL_SIZE    2749898
-#define NUM_FEATS    50
-#define NUM_ITERS    50
-#define NUM_USERS    1
-#define NUM_MOVIES   1
-
 MatrixXd read_data(int rows, int cols, char * filename) {
     ifstream data(filename);
     MatrixXd vals(rows, cols);
