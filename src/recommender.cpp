@@ -20,20 +20,22 @@ MatrixXi read_data(int rows, int cols, string filename) {
 }
 
 Learner::Learner() {
-    double *avg_user_rating     = new double[NUM_USERS];
-    double *user_rating_count   = new double[NUM_USERS];
-    double *avg_user_date       = new double[NUM_USERS];
+    this->avg_user_rating    = new double[NUM_USERS];
+    this->user_rating_count  = new double[NUM_USERS];
+    this->user_rating_norm   = new double[NUM_USERS];
+    this->avg_user_date      = new double[NUM_USERS];
 
-    double *avg_movie_rating    = new double[NUM_MOVIES];
-    double *movie_ratings_count = new double[NUM_MOVIES];
+    this->avg_movie_rating   = new double[NUM_MOVIES];
+    this->movie_rating_count = new double[NUM_MOVIES];
 }
 
 Learner::~Learner() {
-    delete avg_user_rating;
-    delete user_rating_count;
-    delete avg_user_date;
-    delete avg_movie_rating;
-    delete movie_ratings_count;
+    delete this->avg_user_rating;
+    delete this->user_rating_count;
+    delete this->user_rating_norm;
+    delete this->avg_user_date;
+    delete this->avg_movie_rating;
+    delete this->movie_rating_count;
 }
 
 void Learner::set_data(MatrixXi data) {
@@ -59,7 +61,7 @@ void Learner::get_counts() {
         this->user_rating_count[user]++;
 
         this->avg_movie_rating[movie] += rating;
-        this->user_ratings_count[movie]++;
+        this->user_rating_count[movie]++;
     }
 
     this->avg_rating /= DATA_SIZE;
@@ -67,7 +69,7 @@ void Learner::get_counts() {
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         this->avg_user_rating[i] /= this->user_rating_count[i];
         this->avg_user_date[i] /= this->user_rating_count[i];
-        this->user_rating_count[i] = pow(this->user_rating_count[i], -0.5);
+        this->user_rating_norm[i] = pow(this->user_rating_count[i], -0.5);
     }
 
     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
@@ -76,9 +78,15 @@ void Learner::get_counts() {
 }
 
 void Learner::initialize() {
-
+    for (unsigned int i = 0; i < NUM_FEATS; ++i) {
+        for (unsigned int j = 0; i < NUM_USERS; ++j) {
+            this->U(i, j) = small_rand();
+        }
+        for (unsigned int k = 0; i < NUM_MOVIES; ++k) {
+            this->V(i, k) = small_rand();
+        }
+    }
 }
-
 
 void Learner::train() {
     // nead to write this
@@ -95,7 +103,7 @@ int main() {
     learner->set_data(read_data(DATA_SIZE, 4, DATA_FILE));
     learner->set_qual(read_data(QUAL_SIZE, 3, QUAL_FILE));
     learner->train();
-    learner->test();
+    learner->predict();
 
     return 0;
 }
