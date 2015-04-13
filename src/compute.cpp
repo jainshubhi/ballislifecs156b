@@ -29,5 +29,5 @@ double dev_ut(int date, double avg_date) {
 }
 
 double user_k(int rating_count) {
-    return pow(rating_count, SPLINE_POWER);
+    return pow(rating_count, SPLINE_POW);
 }
