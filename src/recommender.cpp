@@ -1,8 +1,8 @@
 #include "recommender.hpp"
 
-MatrixXd read_data(int rows, int cols, char * filename) {
+MatrixXi read_data(int rows, int cols, string filename) {
     ifstream data(filename);
-    MatrixXd vals(rows, cols);
+    MatrixXi vals(rows, cols);
     string line;
     int row = 0, col = 0;
 
@@ -27,18 +27,26 @@ Learner::~Learner() {
     // do nothing
 }
 
-void Learner::train() {
-    int a = 1;
+void Learner::set_data(MatrixXi data) {
+    this->data = data;
 }
 
-void Learner::test() {
-    int a = 1;
+void Learner::set_qual(MatrixXi qual) {
+    this->qual = qual;
+}
+
+void Learner::train() {
+    // nead to write this
+}
+
+void Learner::predict() {
+    // need to write this
 }
 
 int main() {
     Learner * learner = new Learner();
-    learner->data = read_data(DATA_SIZE, 4, DATA_FILE);
-    learner->qual = read_data(QUAL_SIZE, 3, QUAL_FILE);
+    learner->set_data(read_data(DATA_SIZE, 4, DATA_FILE));
+    learner->set_qual(read_data(QUAL_SIZE, 3, QUAL_FILE));
     learner->train();
     learner->test();
 

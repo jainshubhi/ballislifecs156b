@@ -5,4 +5,4 @@ Our team, Ball is Life:
 - Shubhi Jain
 
 ## Our Strategy
-SVD first.
+timeSVD++.

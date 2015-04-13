@@ -5,47 +5,34 @@
 #include <vector>
 #include "/usr/local/Cellar/eigen/3.2.3/include/eigen3/Eigen/Dense"
 
-#define DATA_FILE    "data/mu/all.dta"
-#define QUAL_FILE    "data/mu/qual.dta"
-#define DATA_SIZE    102416306
-#define QUAL_SIZE    2749898
-#define NUM_FEATS    50
-#define NUM_ITERS    50
-#define NUM_USERS    1
-#define NUM_MOVIES   1
+#define DATA_FILE  "data/mu/all.dta"
+#define QUAL_FILE  "data/mu/qual.dta"
+#define DATA_SIZE  102416306
+#define QUAL_SIZE  2749898
+#define NUM_FEATS  50
+#define NUM_ITERS  50
+#define NUM_USERS  458293 + 1
+#define NUM_MOVIES 17770 + 1
 
 using namespace std;
 using namespace Eigen;
 
-#define DATA_FILE    "data/mu/all.dta"
-#define QUAL_FILE    "data/mu/qual.dta"
-#define DATA_SIZE    102416306
-#define QUAL_SIZE    2749898
-#define NUM_FEATS    50
-#define NUM_ITERS    50
-#define NUM_USERS    1
-#define NUM_MOVIES   1
-
-typedef Matrix<int,   DATA_SIZE, 4>          DataMatrix;
-typedef Matrix<int,   QUAL_SIZE, 3>          QualMatrix;
-typedef Matrix<float, QUAL_SIZE, 1>          RespVector;
-typedef Matrix<float, NUM_USERS, NUM_FEATS>  UVector;
-typedef Matrix<float, NUM_FEATS, NUM_MOVIES> VVector;
-
-MatrixXd read_data(int rows, int cols);
+MatrixXi read_data(int rows, int cols, string filename);
 
 class Learner {
 public:
     Learner();
     ~Learner();
 
+    void set_data(MatrixXi data);
+    void set_qual(MatrixXi qual);
     void train();
-    void test();
+    void predict();
 
 private:
-    DataMatrix data;
-    QualMatrix qual;
-    RespVector resp;
-    UVector U;
-    VVector V;
+    MatrixXi data;
+    MatrixXi qual;
+    MatrixXf resp;
+    MatrixXf U;
+    MatrixXf V;
 };

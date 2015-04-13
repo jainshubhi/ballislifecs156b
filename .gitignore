@@ -4,7 +4,7 @@ data/
 # executables and object files
 bin/
 obj/
-# DS store thing
+# DS store
 .DS_store
 
 ## C++ gitignores:
