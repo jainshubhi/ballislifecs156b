@@ -8,6 +8,15 @@
 using namespace std;
 using namespace Eigen;
 
+#define DATA_FILE    "data/mu/all.dta"
+#define QUAL_FILE    "data/mu/qual.dta"
+#define DATA_SIZE    102416306
+#define QUAL_SIZE    2749898
+#define NUM_FEATS    50
+#define NUM_ITERS    50
+#define NUM_USERS    1
+#define NUM_MOVIES   1
+
 typedef Matrix<int,   DATA_SIZE, 4>          DataMatrix;
 typedef Matrix<int,   QUAL_SIZE, 3>          QualMatrix;
 typedef Matrix<float, QUAL_SIZE, 1>          RespVector;
