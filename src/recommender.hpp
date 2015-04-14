@@ -5,6 +5,7 @@ using namespace Eigen;
 
 MatrixXi read_data(int rows, int cols, string filename);
 
+// Learner class
 class Learner {
 public:
     Learner();
@@ -16,6 +17,8 @@ public:
     void get_counts();
     void initialize();
 
+    void svd();
+    void temporal();
     void train();
     void predict();
 

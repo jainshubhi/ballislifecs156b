@@ -15,7 +15,6 @@
 // constants regarding learning
 #define NUM_FEATS  50
 #define NUM_ITERS  50
-
 #define BETA       0.4
 #define GAMMA      0.3
 #define SPLINE_POW 0.25

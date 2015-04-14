@@ -1,5 +1,6 @@
 #include "recommender.hpp"
 
+// read data from file into integer matrix
 MatrixXi read_data(int rows, int cols, string filename) {
     ifstream data(filename);
     MatrixXi vals(rows, cols);
@@ -19,6 +20,7 @@ MatrixXi read_data(int rows, int cols, string filename) {
     return vals;
 }
 
+// init learner
 Learner::Learner() {
     this->avg_user_rating    = new double[NUM_USERS];
     this->user_rating_count  = new double[NUM_USERS];
@@ -29,6 +31,7 @@ Learner::Learner() {
     this->movie_rating_count = new double[NUM_MOVIES];
 }
 
+// deinit learner
 Learner::~Learner() {
     delete this->avg_user_rating;
     delete this->user_rating_count;
@@ -38,14 +41,17 @@ Learner::~Learner() {
     delete this->movie_rating_count;
 }
 
+// set data matrix
 void Learner::set_data(MatrixXi data) {
     this->data = data;
 }
 
+// set qual matrix
 void Learner::set_qual(MatrixXi qual) {
     this->qual = qual;
 }
 
+// get all user and movie counts and averages
 void Learner::get_counts() {
     unsigned int user, movie, rating, date;
     for (unsigned int i = 0; i < DATA_SIZE; ++i) {
@@ -77,6 +83,7 @@ void Learner::get_counts() {
     }
 }
 
+// init U, V
 void Learner::initialize() {
     for (unsigned int i = 0; i < NUM_FEATS; ++i) {
         for (unsigned int j = 0; i < NUM_USERS; ++j) {
@@ -88,10 +95,25 @@ void Learner::initialize() {
     }
 }
 
-void Learner::train() {
-    // nead to write this
+// train U, V using SVD
+// TODO shubhi
+void Learner::svd() {
+
 }
 
+// train the temporal model parameters using SGD
+// TODO dylan
+void Learner::temporal() {
+
+}
+
+// train the full model
+void Learner::train() {
+    this->svd();
+    this->temporal();
+}
+
+// make predictions on the qual data set
 void Learner::predict() {
     for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
         // prediction function
@@ -105,5 +127,5 @@ int main() {
     learner->train();
     learner->predict();
 
-    return 0;
+    return 1;
 }
