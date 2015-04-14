@@ -15,6 +15,9 @@ public:
 
     void get_counts();
     void initialize();
+    void svd();
+    void temporal();
+
 
     void train();
     void predict();

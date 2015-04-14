@@ -88,8 +88,20 @@ void Learner::initialize() {
     }
 }
 
+// shubhi
+void Learner::svd() {
+
+}
+
+//dylan
+void Learner::temporal() {
+
+}
+
+
 void Learner::train() {
-    // nead to write this
+    this->svd();
+    this->temporal();
 }
 
 void Learner::predict() {
