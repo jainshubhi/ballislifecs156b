@@ -143,7 +143,9 @@ void Learner::train() {
 }
 
 void Learner::predict_qual() {
+    for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
 
+    }
 }
 
 int main() {

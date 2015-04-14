@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "/usr/local/Cellar/eigen/3.2.3/include/eigen3/Eigen/Dense"
 #include "constants.hpp"
 
 using namespace std;

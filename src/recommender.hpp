@@ -2,7 +2,6 @@
 #include "DataPoint.hpp"
 
 using namespace std;
-using namespace Eigen;
 
 // class for the learner
 class Learner {
