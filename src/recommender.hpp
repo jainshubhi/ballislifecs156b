@@ -16,6 +16,9 @@ public:
 
     void get_counts();
     void initialize();
+    void svd();
+    void temporal();
+
 
     void svd();
     void temporal();
