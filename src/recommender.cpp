@@ -1,25 +1,5 @@
 #include "recommender.hpp"
 
-// read data from file into integer matrix
-MatrixXi read_data(int rows, int cols, string filename) {
-    ifstream data(filename);
-    MatrixXi vals(rows, cols);
-    string line;
-    int row = 0, col = 0;
-
-    while (getline(data, line)) {
-        stringstream lineStream(line);
-        string cell;
-        while (getline(lineStream, cell, ' ')) {
-            vals(row, col) = atoi(cell.c_str());
-            ++col;
-        }
-        ++row;
-        col = 0;
-    }
-    return vals;
-}
-
 // init learner
 Learner::Learner() {
     this->avg_user_rating    = new double[NUM_USERS];
@@ -29,6 +9,17 @@ Learner::Learner() {
 
     this->avg_movie_rating   = new double[NUM_MOVIES];
     this->movie_rating_count = new double[NUM_MOVIES];
+
+    this->U = new double*[NUM_USERS];
+    this->V = new double*[NUM_MOVIES];
+
+    for (unsigned int i = 0; i < NUM_USERS; ++i) {
+        this->U[i] = new double[NUM_FEATS];
+    }
+
+    for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
+        this->V[i] = new double[NUM_FEATS];
+    }
 }
 
 // deinit learner
@@ -39,26 +30,56 @@ Learner::~Learner() {
     delete this->avg_user_date;
     delete this->avg_movie_rating;
     delete this->movie_rating_count;
+
+    for (unsigned int i = 0; i < data.size(); ++i) {
+        delete data[i];
+    }
+
+    for (unsigned int i = 0; i < NUM_USERS; ++i) {
+        delete[] this->U[i];
+
+    }
+
+    for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
+        delete[] this->V[i];
+    }
+
+    delete[] this->U;
+    delete[] this->V;
 }
 
-// set data matrix
-void Learner::set_data(MatrixXi data) {
-    this->data = data;
-}
+// read data from file into integer matrix and put in object
+void Learner::read_data(string filename, bool is_data) {
+    ifstream data(filename);
+    string line;
+    vector<int> current;
 
-// set qual matrix
-void Learner::set_qual(MatrixXi qual) {
-    this->qual = qual;
+    while (getline(data, line)) {
+        stringstream lineStream(line);
+        string cell;
+        current.clear();
+        while (getline(lineStream, cell, ' ')) {
+            current.push_back(atoi(cell.c_str()));
+        }
+        if (is_data) {
+            DataPoint * new_point = new DataPoint(current);
+            this->data.push_back(new_point);
+        }
+        else {
+            DataPoint * new_point = new DataPoint(current);
+            this->qual.push_back(new_point);
+        }
+    }
 }
 
 // get all user and movie counts and averages
 void Learner::get_counts() {
     unsigned int user, movie, rating, date;
     for (unsigned int i = 0; i < DATA_SIZE; ++i) {
-        user   = this->data(i, USER_COL);
-        movie  = this->data(i, MOVIE_COL);
-        rating = this->data(i, RATING_COL);
-        date   = this->data(i, TIME_COL);
+        user   = this->data[i]->user;
+        movie  = this->data[i]->movie;
+        rating = this->data[i]->rating;
+        date   = this->data[i]->date;
 
         this->avg_rating += rating;
 
@@ -83,16 +104,24 @@ void Learner::get_counts() {
     }
 }
 
-// init U, V
+// init U, V to small random numbers
 void Learner::initialize() {
     for (unsigned int i = 0; i < NUM_FEATS; ++i) {
         for (unsigned int j = 0; i < NUM_USERS; ++j) {
-            this->U(i, j) = small_rand();
+            this->U[j][i] = small_rand();
         }
         for (unsigned int k = 0; i < NUM_MOVIES; ++k) {
-            this->V(i, k) = small_rand();
+            this->V[k][i] = small_rand();
         }
     }
+}
+
+// make predictions on a given point
+double Learner::predict(int user, int movie, int date) {
+    if (!(check_user(user) && check_movie(movie))) {
+        printf("Invalid user or movie. User: %d, Movie: %d\n", user, movie);
+    }
+    return 1.0;
 }
 
 // train U, V using SVD
@@ -113,19 +142,16 @@ void Learner::train() {
     this->temporal();
 }
 
-// make predictions on the qual data set
-void Learner::predict() {
-    for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
-        // prediction function
-    }
+void Learner::predict_qual() {
+
 }
 
 int main() {
     Learner * learner = new Learner();
-    learner->set_data(read_data(DATA_SIZE, 4, DATA_FILE));
-    learner->set_qual(read_data(QUAL_SIZE, 3, QUAL_FILE));
+    learner->read_data(DATA_FILE, true);
+    learner->read_data(QUAL_FILE, false);
     learner->train();
-    learner->predict();
+    learner->predict_qual();
 
     return 1;
 }

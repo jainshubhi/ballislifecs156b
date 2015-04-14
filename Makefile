@@ -11,7 +11,7 @@ test: all clean
 
 recommender: $(OBJ)/recommender.o
 
-$(OBJ)/recommender.o: $(SRC)/recommender.cpp $(SRC)/recommender.hpp $(SRC)/compute.cpp
+$(OBJ)/recommender.o: $(SRC)/recommender.cpp $(SRC)/recommender.hpp $(SRC)/compute.cpp $(SRC)/DataPoint.hpp
 	$(CXX) -c $(CXXFLAGS) $(SRC)/recommender.cpp -o $(OBJ)/recommender.o
 	$(CXX) $(OBJ)/recommender.o -o $(BIN)/recommender
 

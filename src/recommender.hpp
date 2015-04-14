@@ -1,45 +1,49 @@
 #include "compute.cpp"
+#include "DataPoint.hpp"
 
 using namespace std;
 using namespace Eigen;
 
-MatrixXi read_data(int rows, int cols, string filename);
-
-// Learner class
+// class for the learner
 class Learner {
 public:
     Learner();
     ~Learner();
 
-    void set_data(MatrixXi data);
-    void set_qual(MatrixXi qual);
+    void read_data(string filename, bool is_data);
 
     void get_counts();
     void initialize();
-    void svd();
-    void temporal();
-
 
     void svd();
     void temporal();
+
     void train();
-    void predict();
+    double predict(int user, int movie, int date);
+    void predict_qual();
+
 
 private:
-    MatrixXi data;
-    MatrixXi qual;
-    MatrixXf resp;
+    // data
+    vector<DataPoint *> data;
 
-    MatrixXf U;
-    MatrixXf V;
+    // qual
+    vector<DataPoint *> qual;
 
+    // U, V
+    double **U;
+    double **V;
+
+    // overall average rating
     double avg_rating;
 
+    // user based counts and averages
     double *avg_user_rating;
     double *user_rating_count;
     double *user_rating_norm;
     double *avg_user_date;
 
+    // movie based counts and averages
     double *avg_movie_rating;
     double *movie_rating_count;
 };

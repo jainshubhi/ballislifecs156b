@@ -37,3 +37,17 @@ double bound(double x) {
     if (x < 1) return 1;
     return x;
 }
+
+bool check_user(int user) {
+    if ((user > 0) && (user <= NUM_USERS)) {
+        return true;
+    }
+    return false;
+}
+
+bool check_movie(int movie) {
+    if ((movie > 0) && (movie <= NUM_MOVIES)) {
+        return true;
+    }
+    return false;
+}
