@@ -31,6 +31,7 @@ double dev_ut(int date, double avg_date) {
     return sign(date - avg_date) * pow(abs(date - avg_date), BETA);
 }
 
+// bounds the prediction to between 1 and 5
 double bound(double x) {
     if (x > 5) return 5;
     if (x < 1) return 1;
