@@ -1,6 +1,7 @@
 // to change between um and mu these next four lines must be changed
 #define DATA_FILE  "data/mu/all.dta"
 #define QUAL_FILE  "data/mu/qual.dta"
+#define OUT_FILE   "predictions.txt"
 #define MOVIE_COL  0
 #define USER_COL   1
 #define TIME_COL   2

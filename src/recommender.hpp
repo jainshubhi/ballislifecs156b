@@ -19,6 +19,7 @@ public:
 
     void train();
     double predict(int user, int movie, int date);
+    double predict(DataPoint * point);
     void predict_qual();
 
 

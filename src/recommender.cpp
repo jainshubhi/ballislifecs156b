@@ -124,6 +124,11 @@ double Learner::predict(int user, int movie, int date) {
     return 1.0;
 }
 
+// make predictions on a given point
+double Learner::predict(DataPoint * point) {
+    return this->predict(point->user, point->movie, point->date);
+}
+
 // train U, V using SVD
 // TODO shubhi
 void Learner::svd() {
@@ -142,10 +147,18 @@ void Learner::train() {
     this->temporal();
 }
 
+// make predictions on qual and write to file
 void Learner::predict_qual() {
-    for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
+    double pred;
+    ofstream out_file;
+    out_file.open(OUT_FILE);
 
+    for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
+        pred = this->predict(this->qual[i]);
+        out_file << pred;
+        out_file << "\n";
     }
+    out_file.close();
 }
 
 int main() {
