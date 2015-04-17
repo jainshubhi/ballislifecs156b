@@ -1,10 +1,16 @@
-#include <vector>
+#include "constants.hpp"
 
 using namespace std;
 
 // class for each data point
 class DataPoint {
 public:
+    // info about a point
+    int user;
+    int movie;
+    int rating;
+    int date;
+
     // values constructor for data point
     DataPoint(int user, int movie, int rating, int date) {
         this->user = user;
@@ -33,10 +39,6 @@ public:
         // do nothing
     }
 
-    int user;
-    int movie;
-    int rating;
-    int date;
-
 private:
+    // nothing
 };

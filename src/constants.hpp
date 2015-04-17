@@ -1,5 +1,17 @@
+// all includes
+#include <stdio.h>
+#include <stdlib.h>
+#include <cmath>
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include <vector>
+
 // to change between um and mu these next four lines must be changed
 #define DATA_FILE  "data/mu/all.dta"
+#define IDX_FILE   "data/mu/all.idx"
 #define QUAL_FILE  "data/mu/qual.dta"
 #define OUT_FILE   "predictions.txt"
 #define MOVIE_COL  0
@@ -19,3 +31,8 @@
 #define BETA       0.4
 #define GAMMA      0.3
 #define SPLINE_POW 0.25
+
+// for splitting up data
+#define TRAIN_SET  1
+#define VALID_SET  2
+#define BLEND_SET  3
