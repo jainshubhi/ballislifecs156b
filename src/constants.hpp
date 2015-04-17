@@ -20,6 +20,9 @@
 #define RATING_COL 3
 
 // files for learned values
+#define SVD_FILE   "gen/svd.txt"
+#define TEMP_FILE  "gen/temp.txt"
+#define KNN_FILE   "gen/knn.txt"
 
 // constants regarding data
 #define DATA_SIZE   102416306

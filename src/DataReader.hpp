@@ -16,6 +16,7 @@ public:
     vector<DataPoint *> train_set;
     vector<DataPoint *> valid_set;
     vector<DataPoint *> blend_set;
+    vector<DataPoint *> qual_set;
 
     // inits by reading all data
     DataReader() {
@@ -70,6 +71,11 @@ public:
         for (unsigned int i = 0; i < blend_set.size(); ++i) {
             delete blend_set[i];
         }
+    }
+
+    // read qual into qual_set
+    void read_qual() {
+        // TODO
     }
 
 private:

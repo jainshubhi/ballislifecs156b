@@ -3,6 +3,13 @@
 #include "compute.cpp"
 #endif
 
+#ifndef DATAPOINT_HPP
+#define DATAPOINT_HPP
+#include "DataPoint.hpp"
+#endif
+
+using namespace std;
+
 /*
  * TODO:
  * write data readers for all these types to get their constants
@@ -11,7 +18,7 @@
 
 class Svd {
 public:
-    Svd() {
+    Svd(string filename) {
 
     }
 
@@ -19,8 +26,12 @@ public:
 
     }
 
-    double predict(int user, int movie, int date) {
-        return 1.0;
+    vector<double> predict(vector<DataPoint *> points) {
+        vector<double> resp;
+        for (unsigned int i = 0; i < points.size(); ++i) {
+            // TODO make prediction
+        }
+        return resp;
     }
 
 private:
@@ -29,7 +40,7 @@ private:
 
 class Temporal {
 public:
-    Temporal() {
+    Temporal(string filename) {
 
     }
 
@@ -37,8 +48,12 @@ public:
 
     }
 
-    double predict(int user, int movie, int date) {
-        return 1.0;
+    vector<double> predict(vector<DataPoint *> points) {
+        vector<double> resp;
+        for (unsigned int i = 0; i < points.size(); ++i) {
+            // TODO make prediction
+        }
+        return resp;
     }
 
 private:
@@ -47,7 +62,7 @@ private:
 
 class Knn {
 public:
-    Knn() {
+    Knn(string filename) {
 
     }
 
@@ -55,8 +70,12 @@ public:
 
     }
 
-    double predict(int user, int movie, int date) {
-        return 1.0;
+    vector<double> predict(vector<DataPoint *> points) {
+        vector<double> resp;
+        for (unsigned int i = 0; i < points.size(); ++i) {
+            // TODO make prediction
+        }
+        return resp;
     }
 
 private:
