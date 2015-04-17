@@ -1,5 +1,12 @@
+#ifndef COMPUTE_CPP
+#define COMPUTE_CPP
 #include "compute.cpp"
+#endif
+
+#ifndef DATAPOINT_HPP
+#define DATAPOINT_HPP
 #include "DataPoint.hpp"
+#endif
 
 using namespace std;
 

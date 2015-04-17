@@ -1,4 +1,7 @@
+#ifndef COMPUTE_CPP
+#define COMPUTE_CPP
 #include "compute.cpp"
+#endif
 
 /*
  * TODO:
@@ -16,8 +19,8 @@ public:
 
     }
 
-    predict(int user, int movie, int date) {
-
+    double predict(int user, int movie, int date) {
+        return 1.0;
     }
 
 private:
@@ -34,8 +37,8 @@ public:
 
     }
 
-    predict(int user, int movie, int date) {
-
+    double predict(int user, int movie, int date) {
+        return 1.0;
     }
 
 private:
@@ -52,8 +55,8 @@ public:
 
     }
 
-    predict(int user, int movie, int date) {
-
+    double predict(int user, int movie, int date) {
+        return 1.0;
     }
 
 private:

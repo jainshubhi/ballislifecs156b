@@ -1,5 +1,12 @@
+#ifndef CONSTANTS_CPP
+#define CONSTANTS_CPP
 #include "constants.hpp"
+#endif
+
+#ifndef DATAPOINT_HPP
+#define DATAPOINT_HPP
 #include "DataPoint.hpp"
+#endif
 
 using namespace std;
 
@@ -23,7 +30,7 @@ public:
             stringstream lineStream(line);
             string cell;
             current.clear();
-            data_set = atoi(idx_line);
+            data_set = atoi(idx_line.c_str());
 
             // part of qual, ignore
             if (data_set > 3) {

@@ -5,4 +5,4 @@ Our team, Ball is Life:
 - Shubhi Jain
 
 ## Our Strategy
-timeSVD++.
+A blending of SVD, modeling temporal dynamics, and K-Nearest Neighbors.

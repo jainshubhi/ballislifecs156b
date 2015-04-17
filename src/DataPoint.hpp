@@ -1,4 +1,7 @@
+#ifndef CONSTANTS_CPP
+#define CONSTANTS_CPP
 #include "constants.hpp"
+#endif
 
 using namespace std;
 

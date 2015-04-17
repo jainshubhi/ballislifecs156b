@@ -8,7 +8,15 @@
 #include <string>
 #include <vector>
 
+#ifndef DATAREADER_HPP
+#define DATAREADER_HPP
 #include "DataReader.hpp"
+#endif
+
+#ifndef CONSTANTS_HPP
+#define CONSTANTS_HPP
+#include "constants.hpp"
+#endif
 
 using namespace std;
 
