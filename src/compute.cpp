@@ -58,3 +58,18 @@ bool check_movie(int movie) {
     }
     return false;
 }
+
+double** transpose(double** matrix, int r, int c) {
+    double **t = new double*[c];
+    for(unsigned int i = 0; i < c; ++i) {
+        t[i] = new double[r];
+        for(unsigned int j = 0; j < r; ++j) {
+            t[i][j] = matrix[j][i];
+        }
+    }
+    return t;
+}
+
+double dot(double* vec_1, double* vec_2) {
+    return 0.0;
+}
