@@ -70,6 +70,26 @@ double** transpose(double** matrix, int r, int c) {
     return t;
 }
 
-double dot(double* vec_1, double* vec_2) {
-    return 0.0;
+double dot(double* vec_1, double* vec_2, int length) {
+    double res = 0;
+    for(unsigned int i = 0; i < length; ++i) {
+        res += vec_1[i] * vec_2[i];
+    }
+    return res;
+}
+
+// Not very fast O(n^3)
+double** multiply(double** vec_1, double** vec_2, int r_1, int c, int c_2) {
+    double** res = new double*[r_1];
+    for(unsigned int i = 0; i < r_1; ++i) {
+        for(unsigned int j = 0; j < c_2; ++j) {
+            res[i] = new double[c_2];
+            double* temp = new double[c];
+            for(unsigned int k = 0; k < c; ++k) {
+                temp[k] = vec_2[k][j];
+            }
+            res[i][j] = dot(vec_1[i], temp, c);
+        }
+    }
+    return res;
 }

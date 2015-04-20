@@ -30,6 +30,26 @@ SvdLearner::SvdLearner() {
    }
 }
 
+// Destructor
+SvdLearner::~SvdLearner() {
+
+    for (unsigned int i = 0; i < NUM_USERS; ++i) {
+        delete[] this->U[i];
+        delete[] this->Y[i];
+
+    }
+
+    for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
+        delete[] this->V[i];
+    }
+
+    for (unsigned int i = 0; i < data.size(); ++i) {
+        delete data[i];
+    }
+    delete[] this->U;
+    delete[] this->Y;
+    delete[] this->V;
+}
 
 /* Input
  * lambda is regularization constant
@@ -42,7 +62,7 @@ void SvdLearner::svd(double lambda, double limit) {
     // Part 1: Finding Y = UV'
     // number of users = NUM_USERS, number of movies = NUM_MOVIES
     // Loop through the data set.
-    for(unsigned int i = 0; i < DATA_SIZE; ++i) {
+    for(unsigned int i = 0; i < data.size(); ++i) {
         DataPoint *val = data[i];
         this->Y[val->user][val->movie] = val->rating;
     }
