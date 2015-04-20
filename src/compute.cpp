@@ -45,6 +45,7 @@ double bound(double x) {
     return x;
 }
 
+// check that a number refers to a real user
 bool check_user(int user) {
     if ((user > 0) && (user <= NUM_USERS)) {
         return true;
@@ -52,6 +53,7 @@ bool check_user(int user) {
     return false;
 }
 
+// check that a number refers to a real movie
 bool check_movie(int movie) {
     if ((movie > 0) && (movie <= NUM_MOVIES)) {
         return true;
@@ -59,6 +61,7 @@ bool check_movie(int movie) {
     return false;
 }
 
+// tranpose a matrix of doubles
 double** transpose(double** matrix, int r, int c) {
     double **t = new double*[c];
     for(unsigned int i = 0; i < c; ++i) {
@@ -68,14 +71,6 @@ double** transpose(double** matrix, int r, int c) {
         }
     }
     return t;
-}
-
-double dot(double* vec_1, double* vec_2, int length) {
-    double res = 0;
-    for(unsigned int i = 0; i < length; ++i) {
-        res += vec_1[i] * vec_2[i];
-    }
-    return res;
 }
 
 // Not very fast O(n^3)
@@ -92,4 +87,11 @@ double** multiply(double** vec_1, double** vec_2, int r_1, int c, int c_2) {
         }
     }
     return res;
+// dot product two vectors of doubles
+double dot(double* vec_1, double* vec_2, unsigned int length) {
+    double product = 0.0;
+    for (unsigned int i = 0; i < length; ++i) {
+        product += vec_1[i] * vec_2[i];
+    }
+    return product
 }
