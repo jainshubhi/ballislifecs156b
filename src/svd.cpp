@@ -78,12 +78,17 @@ void SvdLearner::svd(double lambda, double limit) {
 
     // Which is faster?
     for(unsigned int j = 0; j < NUM_MOVIES; ++j) {
-        for (unsigned int k = 0; k < NUM_FEATS; ++k) {
+        for(unsigned int k = 0; k < NUM_FEATS; ++k) {
             this->V[j][k] = small_rand();
         }
     }
 
     // Optimize U and V using CGD, it's more accurate than SGD
+    // int rand_i =
+    // double* sum_u = [];
+    // for(unsigned int j = 0; j < NUM_MOVIES; ++j) {
+    //     sum_u += multiply(V[j], )
+    // }
     // grad_u = lambda * u_i - ;
     // grad_v = ;
 

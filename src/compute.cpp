@@ -73,6 +73,17 @@ double** transpose(double** matrix, int r, int c) {
     return t;
 }
 
+
+// dot product two vectors of doubles
+double dot(double* vec_1, double* vec_2, unsigned int length) {
+    double product = 0.0;
+    for (unsigned int i = 0; i < length; ++i) {
+        product += vec_1[i] * vec_2[i];
+    }
+    return product;
+}
+
+// Multiplication of two matrices of doubles
 // Not very fast O(n^3)
 double** multiply(double** vec_1, double** vec_2, int r_1, int c, int c_2) {
     double** res = new double*[r_1];
@@ -87,11 +98,15 @@ double** multiply(double** vec_1, double** vec_2, int r_1, int c, int c_2) {
         }
     }
     return res;
-// dot product two vectors of doubles
-double dot(double* vec_1, double* vec_2, unsigned int length) {
-    double product = 0.0;
-    for (unsigned int i = 0; i < length; ++i) {
-        product += vec_1[i] * vec_2[i];
+}
+
+double frobenius_norm(double ** matrix, unsigned int r, unsigned int c) {
+    double sum = 0.0;
+    for(unsigned int i = 0; i < r; ++i) {
+        for(unsigned int j = 0; j < c; ++j) {
+            double val = matrix[i][j];
+            sum += val * val;
+        }
     }
-    return product
+    return sqrt(sum);
 }
