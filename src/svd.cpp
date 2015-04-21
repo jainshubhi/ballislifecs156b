@@ -92,6 +92,7 @@ void SvdLearner::init(double limit) {
 void SvdLearner::svd(double lambda, int i, int j, double le_dot) {
     for(unsigned int k = 0; k < NUM_FEATS; ++k) {
         // Can also have a learning rate here.
+        // This value of V/U may be incorrect respectively
         // update user feature vector
         U[i][k] -= lambda * U[i][k] - V[j][k] * (Y[i][j] - le_dot);
         // update movie feature vector
