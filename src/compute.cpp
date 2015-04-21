@@ -62,16 +62,16 @@ bool check_movie(int movie) {
 }
 
 // tranpose a matrix of doubles
-double** transpose(double** matrix, int r, int c) {
-    double **t = new double*[c];
-    for(unsigned int i = 0; i < c; ++i) {
-        t[i] = new double[r];
-        for(unsigned int j = 0; j < r; ++j) {
-            t[i][j] = matrix[j][i];
-        }
-    }
-    return t;
-}
+// double** transpose(double** matrix, int r, int c) {
+//     double **t = new double*[c];
+//     for(unsigned int i = 0; i < c; ++i) {
+//         t[i] = new double[r];
+//         for(unsigned int j = 0; j < r; ++j) {
+//             t[i][j] = matrix[j][i];
+//         }
+//     }
+//     return t;
+// }
 
 
 // dot product two vectors of doubles
@@ -85,20 +85,20 @@ double dot(double* vec_1, double* vec_2, unsigned int length) {
 
 // Multiplication of two matrices of doubles
 // Not very fast O(n^3)
-double** multiply(double** vec_1, double** vec_2, int r_1, int c, int c_2) {
-    double** res = new double*[r_1];
-    for(unsigned int i = 0; i < r_1; ++i) {
-        for(unsigned int j = 0; j < c_2; ++j) {
-            res[i] = new double[c_2];
-            double* temp = new double[c];
-            for(unsigned int k = 0; k < c; ++k) {
-                temp[k] = vec_2[k][j];
-            }
-            res[i][j] = dot(vec_1[i], temp, c);
-        }
-    }
-    return res;
-}
+// double** multiply(double** vec_1, double** vec_2, int r_1, int c, int c_2) {
+//     double** res = new double*[r_1];
+//     for(unsigned int i = 0; i < r_1; ++i) {
+//         for(unsigned int j = 0; j < c_2; ++j) {
+//             res[i] = new double[c_2];
+//             double* temp = new double[c];
+//             for(unsigned int k = 0; k < c; ++k) {
+//                 temp[k] = vec_2[k][j];
+//             }
+//             res[i][j] = dot(vec_1[i], temp, c);
+//         }
+//     }
+//     return res;
+// }
 
 double frobenius_norm(double ** matrix, unsigned int r, unsigned int c) {
     double sum = 0.0;

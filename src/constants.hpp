@@ -39,6 +39,7 @@
 #define BETA       0.4
 #define GAMMA      0.3
 #define SPLINE_POW 0.25
+#define LAMBDA     0.01
 
 // for splitting up data
 #define TRAIN_SET  1

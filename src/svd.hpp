@@ -9,7 +9,9 @@ public:
     SvdLearner();
     ~SvdLearner();
 
-    void svd(double lambda, double limit);
+    void svd(double lambda, int i, int j, double le_dot);
+    void init(double limit);
+    void train(double norm_val);
 
 private:
     double** U; // 2 dimensional array NUM_USERS * NUM_FEATS
