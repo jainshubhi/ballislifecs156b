@@ -19,13 +19,12 @@ int main() {
 
 // Constructor
 SvdLearner::SvdLearner() {
-   // Initialize U & Y
+   // Initialize U, V
    this->U = new double*[NUM_USERS];
-   this->Y = new double*[NUM_USERS];
    this->V = new double*[NUM_MOVIES];
+
    for(unsigned int i = 0; i < NUM_USERS; ++i) {
        this->U[i] = new double[NUM_FEATS];
-       this->Y[i] = new double[NUM_MOVIES];
    }
 
    // Initialize V
@@ -40,8 +39,8 @@ SvdLearner::~SvdLearner() {
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         delete[] this->U[i];
         delete[] this->Y[i];
-
     }
+
     // Delete V
     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
         delete[] this->V[i];
@@ -67,28 +66,20 @@ void SVDLearner::set_data(vector<DataPoint *> data) {
  * NUM_FEATS is the number of latent factors
  */
 void SvdLearner::init(double limit) {
-    // Part 1: Finding Y = UV'
-    // number of users = NUM_USERS, number of movies = NUM_MOVIES
-    // Loop through the data set.
-    for(unsigned int i = 0; i < data.size(); ++i) {
-        DataPoint *val = data[i];
-        this->Y[val->user][val->movie] = val->rating;
-    }
-    // Initialize U and V randomly
+    // Initialize U and V to small random numbers
     for(unsigned int i = 0; i < NUM_USERS; ++i) {
         for (unsigned int k = 0; k < NUM_FEATS; ++k) {
             this->U[i][k] = small_rand();
-            // if(i < NUM_MOVIES)
-            //     V[i][k] = small_rand();
         }
     }
-    // Which is faster?
+
     for(unsigned int j = 0; j < NUM_MOVIES; ++j) {
         for(unsigned int k = 0; k < NUM_FEATS; ++k) {
             this->V[j][k] = small_rand();
         }
     }
 }
+
 /* Input
  * lambda is our regularization factor
  * i is the chosen user
@@ -108,7 +99,7 @@ void SvdLearner::svd(double lambda, int i, int j, double le_dot) {
         V[j][k] -= lambda * V[j][k] - U[i][k] * (Y[i][j] - le_dot);
     }
 }
-/* Input
+/* Inputf
  * norm_val is the stopping criteria
  * Output
  * Notes
@@ -123,6 +114,28 @@ void SvdLearner::train(double norm_val) {
                 svd(LAMBDA, i, j, le_dot);
             }
         }
+    }
+}
+
+// calculates SUM(r - UV') + lambda * (||U|| + ||V||)
+void SvdLearner::error() {
+
+}
+
+void SvdLearner::gradient() {
+
+}
+
+// do SGD
+void SvdLearner::train(double lambda) {
+    for (unsigned int i = 0; i < NUM_EPOCHS; ++i) {
+        // calculate gradients
+        this->gradient_U();
+        this->gradient_V();
+
+        // subtract gradients to descend
+        this->U = matrix_sub(this->U, this->gradU);
+        this->V = matrix_sub(this->V, this->gradV);
     }
 }
 

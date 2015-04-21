@@ -110,3 +110,8 @@ double frobenius_norm(double ** matrix, unsigned int r, unsigned int c) {
     }
     return sqrt(sum);
 }
+
+//TODO
+double** matrix_sub(double ** mat_1, double ** mat_2) {
+    return mat_1;
+}

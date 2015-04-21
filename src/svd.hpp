@@ -16,8 +16,11 @@ public:
     void write(string filename);
 
 private:
-    double** U; // 2 dimensional array NUM_USERS * NUM_FEATS
-    double** V; // 2 dimensional array NUM_MOVIES * NUM_FEATS
-    double** Y; // 2 dimensional array NUM_USERS * NUM_MOVIES
+    double ** U; // 2 dimensional array NUM_USERS * NUM_FEATS
+    double ** V; // 2 dimensional array NUM_MOVIES * NUM_FEATS
+
+    double ** gradU;
+    double ** gradV;
+
     vector<DataPoint *> data; // complete data set
 };
