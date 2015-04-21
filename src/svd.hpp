@@ -9,9 +9,11 @@ public:
     SvdLearner();
     ~SvdLearner();
 
+    void set_data(vector<DataPoint *> data);
     void svd(double lambda, int i, int j, double le_dot);
     void init(double limit);
     void train(double norm_val);
+    void write(string filename);
 
 private:
     double** U; // 2 dimensional array NUM_USERS * NUM_FEATS

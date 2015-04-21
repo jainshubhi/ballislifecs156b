@@ -18,14 +18,17 @@ using namespace std;
 
 class Svd {
 public:
+    // init the svd model
     Svd(string filename) {
-
+        // read parameters into file
     }
 
+    // deinit the svd model
     ~Svd() {
 
     }
 
+    // predict on a vector of points
     vector<double> predict(vector<DataPoint *> points) {
         vector<double> resp;
         for (unsigned int i = 0; i < points.size(); ++i) {
@@ -40,14 +43,17 @@ private:
 
 class Temporal {
 public:
+    // init the temporal model
     Temporal(string filename) {
 
     }
 
+    // deinit the temporal model
     ~Temporal() {
 
     }
 
+    // predict on a vector of points
     vector<double> predict(vector<DataPoint *> points) {
         vector<double> resp;
         for (unsigned int i = 0; i < points.size(); ++i) {
@@ -62,14 +68,17 @@ private:
 
 class Knn {
 public:
+    // init the knn model
     Knn(string filename) {
 
     }
 
+    // deinit the knn model
     ~Knn() {
 
     }
 
+    // predict on a vector of points
     vector<double> predict(vector<DataPoint *> points) {
         vector<double> resp;
         for (unsigned int i = 0; i < points.size(); ++i) {

@@ -5,9 +5,13 @@ int main() {
     DataReader reader;
 
     // learn parameters
+    SvdLearner svd;
+    svd.set_data(reader.train_set);
+    // svd.train();
     // TODO
 
     // write parameters to files
+    svd.write(SVD_FILE);
     // TODO
 
     return 1;
@@ -49,6 +53,11 @@ SvdLearner::~SvdLearner() {
     delete[] this->U;
     delete[] this->Y;
     delete[] this->V;
+}
+
+// sets the data to the passed value
+void SVDLearner::set_data(vector<DataPoint *> data) {
+    this->data = data;
 }
 
 /* Input
@@ -137,3 +146,7 @@ void SvdLearner::train(double norm_val) {
     // %% Reduce U and V to highest 2 dimensions.
     // U2d = Au(1:2, :) * U';
     // V2d = Av(1:2, :) * V';
+
+void SvdLearner::write(string filename) {
+
+}
