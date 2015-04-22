@@ -134,8 +134,8 @@ void SvdLearner::train(double lambda) {
         this->gradient_V();
 
         // subtract gradients to descend
-        this->U = matrix_sub(this->U, this->gradU);
-        this->V = matrix_sub(this->V, this->gradV);
+        this->U = matrix_sub(this->U, this->gradU, NUM_USERS, NUM_FEATS);
+        this->V = matrix_sub(this->V, this->gradV, NUM_USERS, NUM_FEATS);
     }
 }
 
@@ -150,15 +150,6 @@ void SvdLearner::train(double lambda) {
     //
     // U = next_U;
     // V = new_V(Y, U, lambda);
-    //
-    // // Part 2: Projecting U and V onto 2 dimensions.
-    // %% Compute the SVD of both U and V.
-    // [Au, Su, Bu] = svd(U, 'econ');
-    // [Av, Sv, Bv] = svd(V, 'econ');
-    //
-    // %% Reduce U and V to highest 2 dimensions.
-    // U2d = Au(1:2, :) * U';
-    // V2d = Av(1:2, :) * V';
 
 void SvdLearner::write(string filename) {
 

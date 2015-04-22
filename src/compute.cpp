@@ -88,8 +88,8 @@ double dot(double* vec_1, double* vec_2, unsigned int length) {
 // double** multiply(double** vec_1, double** vec_2, int r_1, int c, int c_2) {
 //     double** res = new double*[r_1];
 //     for(unsigned int i = 0; i < r_1; ++i) {
+//         res[i] = new double[c_2];
 //         for(unsigned int j = 0; j < c_2; ++j) {
-//             res[i] = new double[c_2];
 //             double* temp = new double[c];
 //             for(unsigned int k = 0; k < c; ++k) {
 //                 temp[k] = vec_2[k][j];
@@ -111,7 +111,14 @@ double frobenius_norm(double ** matrix, unsigned int r, unsigned int c) {
     return sqrt(sum);
 }
 
-//TODO
-double** matrix_sub(double ** mat_1, double ** mat_2) {
-    return mat_1;
+// matrix subtraction of two double matrices
+double** matrix_sub(double ** mat_1, double ** mat_2, unsigned int r, unsigned int c) {
+    double ** res = new double*[r];
+    for(unsigned int i = 0; i < r; ++i) {
+        res[i] = new double[c];
+        for(unsigned int j = 0; j < c; ++j) {
+            res[i][j] = mat_1[i][j] - mat_2[i][j];
+        }
+    }
+    return res;
 }
