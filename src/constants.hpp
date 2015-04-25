@@ -1,6 +1,7 @@
 // all includes
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <cmath>
 
 #include <iostream>
@@ -9,20 +10,39 @@
 #include <string>
 #include <vector>
 
-// to change between um and mu these next five lines must be changed
-#define DATA_FILE  "data/mu/all.dta"
-#define IDX_FILE   "data/mu/all.idx"
-#define QUAL_FILE  "data/mu/qual.dta"
+// to change between um and mu these next few lines must be changed
+#define DATA_FILE  "data/um/all.dta"
+#define IDX_FILE   "data/um/all.idx"
+#define QUAL_FILE  "data/um/qual.dta"
 #define OUT_FILE   "predictions.txt"
-#define MOVIE_COL  0
-#define USER_COL   1
-#define TIME_COL   2
+#define USER_COL   0
+#define MOVIE_COL  1
+#define DATE_COL   2
 #define RATING_COL 3
 
 // files for learned values
-#define SVD_FILE   "gen/svd.txt"
-#define TEMP_FILE  "gen/temp.txt"
-#define KNN_FILE   "gen/knn.txt"
+// svd
+#define SVD_U_FILE       "gen/svd_u.txt"
+#define SVD_V_FILE       "gen/svd_v.txt"
+#define USER_BIAS_FILE   "gen/user_bias.txt"
+#define MOVIE_BIAS_FILE  "gen/movie_bias.txt"
+#define IMP_FEATS_FILE   "gen/imp_feats.txt"
+#define BIN_BIAS_FILE    "gen/bin_bias.txt"
+#define TIME_BIAS_FILE   "gen/time_bias.txt"
+#define USER_ALPHA_FILE  "gen/user_alpha.txt"
+#define USER_C_FILE      "gen/user_c.txt"
+#define USER_TIMEC_FILE  "gen/user_time_c.txt"
+// knn
+#define KNN_FILE         "gen/knn.txt"
+
+// files for initial biases
+#define AVG_USER_RATING   "gen/avg_user_rating.txt"
+#define CNT_USER_RATING   "gen/cnt_user_rating.txt"
+#define AVG_USER_DATE     "gen/avg_user_date.txt"
+#define AVG_MOVIE_RATING  "gen/avg_movie_rating.txt"
+#define CNT_MOVIE_RATING  "gen/cnt_movie_rating.txt"
+#define USER_MOVIES       "gen/user_movies.txt"
+#define USER_DATES        "gen/user_dates.txt"
 
 // constants regarding data
 #define DATA_SIZE   102416306
@@ -32,14 +52,19 @@
 #define QUAL_SIZE   2749898
 #define NUM_USERS   458293
 #define NUM_MOVIES  17770
+#define AVG_RATING  3.609516
 
 // constants regarding learning
-#define NUM_FEATS  50
-#define NUM_ITERS  50
-#define BETA       0.4
-#define GAMMA      0.3
-#define SPLINE_POW 0.25
-#define LAMBDA     0.01
+#define FEAT_ADJ_RATE 0.015
+#define BIAS_ADJ_RATE 0.01
+#define NUM_FEATS     50
+#define NUM_EPOCHS    30
+#define TIME_BINS     30
+#define BIN_SIZE      75
+#define BETA          0.4
+#define GAMMA_1       0.007
+#define GAMMA_2       0.007
+#define GAMMA_STEP    0.9
 
 // for splitting up data
 #define TRAIN_SET  1

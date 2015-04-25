@@ -3,11 +3,6 @@
 #include "compute.cpp"
 #endif
 
-#ifndef DATAPOINT_HPP
-#define DATAPOINT_HPP
-#include "DataPoint.hpp"
-#endif
-
 using namespace std;
 
 /*
@@ -28,10 +23,10 @@ public:
 
     }
 
-    // predict on a vector of points
-    vector<double> predict(vector<DataPoint *> points) {
+    // predict on a vector of points TODO no longer DataPoint
+    vector<double> predict(int ** points) {
         vector<double> resp;
-        for (unsigned int i = 0; i < points.size(); ++i) {
+        for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
             // TODO make prediction
         }
         return resp;
@@ -53,10 +48,10 @@ public:
 
     }
 
-    // predict on a vector of points
-    vector<double> predict(vector<DataPoint *> points) {
+    // predict on a vector of points TODO no longer DataPoint
+    vector<double> predict(int ** points) {
         vector<double> resp;
-        for (unsigned int i = 0; i < points.size(); ++i) {
+        for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
             // TODO make prediction
         }
         return resp;
@@ -78,10 +73,10 @@ public:
 
     }
 
-    // predict on a vector of points
-    vector<double> predict(vector<DataPoint *> points) {
+    // predict on a vector of points TODO no longer DataPoint
+    vector<double> predict(int ** points) {
         vector<double> resp;
-        for (unsigned int i = 0; i < points.size(); ++i) {
+        for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
             // TODO make prediction
         }
         return resp;

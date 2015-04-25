@@ -1,9 +1,14 @@
 ## Our own gitignores:
-# data
+# all the data
 data/
+
+# large code generated files
+gen/
+
 # executables and object files
 bin/
 obj/
+
 # DS store
 .DS_store
 

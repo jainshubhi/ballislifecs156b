@@ -1,6 +1,10 @@
 #ifndef DATAREADER_HPP
 #define DATAREADER_HPP
 #include "DataReader.hpp"
+#endif
+
+#ifndef COMPUTE_CPP
+#define COMPUTE_CPP
 #include "compute.cpp"
 #endif
 
@@ -9,18 +13,72 @@ public:
     SvdLearner();
     ~SvdLearner();
 
-    void set_data(vector<DataPoint *> data);
-    void svd(double lambda, int i, int j, double le_dot);
-    void init(double limit);
-    void train(double norm_val);
-    void write(string filename);
+    void set_data(int ** data);
+
+    void get_implicit_c(unsigned int user, double n);
+    void update_implicit_features(unsigned int user, double n);
+    void update_features(unsigned int user, unsigned int movie, double err);
+    void update_baselines(unsigned int user, unsigned int movie, double err,
+        unsigned int item_bin, int user_date_count, double dev);
+
+    void train();
+    void write();
 
 private:
-    double ** U; // 2 dimensional array NUM_USERS * NUM_FEATS
-    double ** V; // 2 dimensional array NUM_MOVIES * NUM_FEATS
+    /* TODO
+     * implicit_features
+     * userDev
+     * itemBinBias
+     *
+     * user_c
+     * user_time_c
+     *
+     * user_alpha
+     */
 
-    double ** gradU;
-    double ** gradV;
 
-    vector<DataPoint *> data; // complete data set
+    // learning rates
+    double gamma1 = GAMMA_1;
+    double gamma2 = GAMMA_2;
+
+    // user and movie latent factors
+    double ** U;
+    double ** V;
+
+    // movies and dates that each user has watched
+    int ** user_movies;
+    int ** user_dates;
+
+    // user averages and counts
+    double * user_bias;
+    int * count_user_rating;
+    double * avg_user_date;
+
+    // movie averages and counts
+    double * movie_bias;
+    int * count_movie_rating;
+
+    // user alphas for time deviatoin
+    double * user_alpha;
+
+    // user time biases
+    double ** user_time_bias;
+
+    // user c for time bins
+    double * user_c;
+
+    // c_u(t) for each user
+    //TODO figure out where this fits in (also need to allocate it)
+    double ** user_time_c;
+
+    // TODO figure out what these are
+    double ** item_bin_bias;
+    double ** implicit_features;
+
+    // user to decrease computation time
+    double * implicit_c;
+    double * temp_implicit_c;
+
+    // all training data
+    int ** data;
 };
