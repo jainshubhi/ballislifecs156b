@@ -5,4 +5,29 @@ Our team, Ball is Life:
 - Shubhi Jain
 
 ## Our Strategy
-A blending of SVD, modeling temporal dynamics, and K-Nearest Neighbors.
+A blending of timeSVD++, RBM, and KNN.
+
+## Usage
+Compile everything with:
+make all
+
+Compute averages (only needs to be done once):
+./bin/averages
+
+Run timeSVD++:
+./bin/svd
+
+Run KNN:
+./bin/knn
+
+Run RBM:
+./bin/rbm
+
+Finally, run Blender:
+./bin/blender
+
+And check output file.
+
+Alternatively, run:
+./run.sh
+And it will do all of the above.
