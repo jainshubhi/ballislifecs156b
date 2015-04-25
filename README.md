@@ -18,16 +18,21 @@ Run timeSVD++:
 ./bin/svd
 
 Run KNN:
+
 ./bin/knn
 
 Run RBM:
+
 ./bin/rbm
 
 Finally, run Blender:
+
 ./bin/blender
 
 And check output file.
 
 Alternatively, run:
+
 ./run.sh
+
 And it will do all of the above.
