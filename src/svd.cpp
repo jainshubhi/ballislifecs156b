@@ -4,17 +4,23 @@ int main() {
     // read data
     DataReader * reader = new DataReader;
 
-    // learn parameters
+    // read qual
+    reader->read_qual();
+
+    // init learner
     SvdLearner svd;
 
-    // +++++++++++++++++++++++++
-    svd.set_data(reader->train_set);
-    // svd.set_data(reader->blend_set);
-    // +++++++++++++++++++++++++
+    // set reader
+    svd.set_dr(reader);
+
+    // learn parameters
     svd.train();
 
+    // write predictions to file
+    svd.pred();
+
     // write parameters to files
-    svd.write();
+    // svd.write();
 
     return 1;
 }
@@ -139,8 +145,8 @@ SvdLearner::~SvdLearner() {
 }
 
 // sets the data to the passed value
-void SvdLearner::set_data(int ** data) {
-    this->data = data;
+void SvdLearner::set_dr(DataReader * reader) {
+    this->reader = reader;
 }
 
 // Calculate once per user, the sum of his implicit features
@@ -224,6 +230,7 @@ void SvdLearner::train() {
 
     // iterate for number of epochs
     for (unsigned int i = 0; i < NUM_EPOCHS; ++i) {
+    // for (unsigned int i = 0; i < 5; ++i) {
         time(&start);
         printf("Epoch %d...\n", i);
         train_err = 0;
@@ -233,11 +240,11 @@ void SvdLearner::train() {
         train_count = 0;
 
         // go through all training data
-        for (unsigned int i = 0; i < TRAIN_SIZE; ++i) {
-            user = this->data[i][USER_COL];
-            movie = this->data[i][MOVIE_COL];
-            date = this->data[i][DATE_COL];
-            rating = this->data[i][RATING_COL];
+        for (unsigned int j = 0; j < TRAIN_SIZE; ++j) {
+            user = this->reader->train_set[j][USER_COL];
+            movie = this->reader->train_set[j][MOVIE_COL];
+            date = this->reader->train_set[j][DATE_COL];
+            rating = this->reader->train_set[j][RATING_COL];
 
             // printf("user: %d movie: %d\n", user, movie);
 
@@ -245,18 +252,13 @@ void SvdLearner::train() {
                 printf("Invalid user (%d) or movie (%d).\n", user, movie);
             }
 
-            // printf("b1\n");
-
             // Get rating from raw data if we have a new user
             if (temp != user) {
                 // update implict feature for previous user
                 if (temp > 0) {
-                    // printf("b2\n");
                     this->update_implicit_features(temp, n);
                 }
-                // printf("b3 %d %d\n", user, this->count_user_rating[user]);
                 n = inv_sqrt(this->count_user_rating[user]);
-                // printf("b4\n");
                 this->get_implicit_c(user, n);
                 temp = user;
                 date_temp = 0;
@@ -268,51 +270,47 @@ void SvdLearner::train() {
                 date_temp = date;
             }
 
-            // printf("b5\n");
             // Get contribution from each feature
             feature_c = 0;
-            for (unsigned int i = 0; i < NUM_FEATS; i++) {
-                feature_c += (U[user][i] + temp_implicit_c[i]) * V[movie][i]; //FIX
+            for (unsigned int k = 0; k < NUM_FEATS; ++k) {
+                feature_c += (U[user][k] + temp_implicit_c[k]) * V[movie][k]; //FIX
             }
-
-            // printf("c1\n");
 
             // Get user time bias and alpha
             alpha = user_alpha[user];
-            // printf("c11\n");
             dev = this->user_dates[user][user_date_count] - this->avg_user_date[user];
-            // printf("c12\n");
             user_time_b = this->user_time_bias[user][user_date_count];
 
-            // printf("c2\n");
             // Get item bin number and bias
             item_bin = (int) floor((float) date / (float) BIN_SIZE);
-            // printf("c3\n");
+
             // printf("item_bin %f\n", item_bin_bias[movie][item_bin]);
             // printf("user_date_count %f\n", user_time_c[user][user_date_count]);
+
+            /* REAL PREDICTION THING
             predict = (AVG_RATING + user_bias[user]
                 + (movie_bias[movie] + item_bin_bias[movie][item_bin])
                     * (user_c[user] + user_time_c[user][user_date_count])
                  + alpha * dev + user_time_b + feature_c);
+            */
+
+            // temporary prediction thing
+            predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
 
             // printf("predict %f\n", predict);
-            // printf("c4\n");
+            predict = bound(predict);
             err = (double) rating - predict;
 
+            // printf("error #%d: %f\n", j, err);
+
             train_err += err * err;
-            // printf("c5\n");
             this->update_features(user, movie, err);
-            // printf("c6\n");
             this->update_baselines(user, movie, err, item_bin, user_date_count, dev);
             train_count++;
         }
 
-        // printf("d\n");
-
         // update last user
         this->update_implicit_features(user, n);
-
-        // printf("e\n");
 
         // Update gammas by factor to decrease learning rate
         this->gamma1 *= GAMMA_STEP;
@@ -323,6 +321,48 @@ void SvdLearner::train() {
         printf("Train RMSE: %f. Took %.f seconds.\n",
             sqrt(train_err / (double) TRAIN_SIZE), difftime(end, start));
     }
+}
+
+void SvdLearner::pred() {
+    int user, movie, date, temp = -0, date_temp = 0, user_date_count = -1;
+    double feature_c, predict, n;
+
+    ofstream out_file;
+    out_file.open(OUT_FILE);
+
+    for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
+        user = this->reader->qual_set[i][USER_COL];
+        movie = this->reader->qual_set[i][MOVIE_COL];
+        date = this->reader->qual_set[i][DATE_COL];
+
+        // get info for current user and date if needed
+        if (temp != user) {
+            n = inv_sqrt(this->count_user_rating[user]);
+            this->get_implicit_c(user, n);
+            temp = user;
+            date_temp = 0;
+            user_date_count = -1;
+        }
+        if (date != date_temp) {
+            user_date_count++;
+            date_temp = date;
+        }
+
+        // calculate prediction
+        // TODO this will be replaced with the more complicated formula eventually
+        feature_c = 0;
+        for (unsigned int j = 0; j < NUM_FEATS; ++j) {
+            feature_c += (U[user][j] + temp_implicit_c[j]) * V[movie][j];
+        }
+        predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+        predict = bound(predict);
+
+        // write to file
+        out_file << predict;
+        out_file << "\n";
+    }
+
+    out_file.close();
 }
 
 // write all learned parameters to files

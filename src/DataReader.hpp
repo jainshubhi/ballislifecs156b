@@ -124,16 +124,38 @@ public:
             for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
                 delete[] this->qual_set[i];
             }
-
             delete[] this->qual_set;
         }
     }
 
-    // TODO read qual into qual_set
     void read_qual() {
+        int row = 0, col;
+        ifstream data(QUAL_FILE);
+        string line;
+
+        // allocate qual_set
         this->qual_set = new int*[QUAL_SIZE];
         for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
             this->qual_set[i] = new int[3];
+        }
+
+        // read data into qual_set
+        while (getline(data, line)) {
+            stringstream lineStream(line);
+            string cell;
+            col = 0;
+
+            while (getline(lineStream, cell, ' ')) {
+                this->qual_set[row][col] = atoi(cell.c_str());
+                col++;
+            }
+
+            // go from 1-indexed to 0-indexed
+            this->qual_set[row][USER_COL] -= 1;
+            this->qual_set[row][MOVIE_COL] -= 1;
+
+            row++;
+
         }
     }
 

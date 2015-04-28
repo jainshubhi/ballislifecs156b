@@ -13,7 +13,7 @@ public:
     SvdLearner();
     ~SvdLearner();
 
-    void set_data(int ** data);
+    void set_dr(DataReader * reader);
 
     void get_implicit_c(unsigned int user, double n);
     void update_implicit_features(unsigned int user, double n);
@@ -23,6 +23,7 @@ public:
 
     void train();
     void write();
+    void pred();
 
 private:
     /* TODO
@@ -79,6 +80,6 @@ private:
     double * implicit_c;
     double * temp_implicit_c;
 
-    // all training data
-    int ** data;
+    // data reader
+    DataReader * reader;
 };
