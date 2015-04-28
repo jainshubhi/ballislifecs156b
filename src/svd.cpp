@@ -194,9 +194,13 @@ void SvdLearner::update_features(unsigned int user, unsigned int movie, double e
         uv = this->U[user][i];
         mv = this->V[movie][i];
         tc = this->temp_implicit_c[i];
-        this->V[movie][i] += this->gamma2 *(err * (uv + tc) - FEAT_ADJ_RATE * mv);
-        this->temp_implicit_c[i] += this->gamma2 * (err * this->V[movie][i] - FEAT_ADJ_RATE * tc);
+        // this->V[movie][i] += this->gamma2 *(err * (uv + tc) - FEAT_ADJ_RATE * mv);
+        this->V[movie][i] += this->gamma2 *(err * uv - FEAT_ADJ_RATE * mv);
+
+        // this->U[user][i] += this->gamma2 * (err * mv - FEAT_ADJ_RATE * uv);
         this->U[user][i] += this->gamma2 * (err * mv - FEAT_ADJ_RATE * uv);
+
+        this->temp_implicit_c[i] += this->gamma2 * (err * this->V[movie][i] - FEAT_ADJ_RATE * tc);
     }
 }
 
@@ -210,8 +214,12 @@ void SvdLearner::update_baselines(unsigned int user, unsigned int movie, double 
     double ub = this->user_time_bias[user][user_date_count];
     double uc = this->user_c[user];
     double utc = this->user_time_c[user][user_date_count];
+    // this->user_bias[user]                       += this->gamma1 * (err - BIAS_ADJ_RATE * uv);
     this->user_bias[user]                       += this->gamma1 * (err - BIAS_ADJ_RATE * uv);
-    this->movie_bias[movie]                     += this->gamma1 * (err * (uc + utc) - BIAS_ADJ_RATE * mv);
+
+    // this->movie_bias[movie]                     += this->gamma1 * (err * (uc + utc) - BIAS_ADJ_RATE * mv);
+    this->movie_bias[movie]                     += this->gamma1 * (err - BIAS_ADJ_RATE * mv);
+
     this->item_bin_bias[movie][item_bin]        += this->gamma1 * (err * (uc + utc) - BIAS_ADJ_RATE * ib);
     this->user_alpha[user]                      += this->gamma1 * (err * dev/NUM_FEATS - BIAS_ADJ_RATE * alpha);
     this->user_time_bias[user][user_date_count] += this->gamma1 * (err - BIAS_ADJ_RATE * ub);
@@ -230,7 +238,6 @@ void SvdLearner::train() {
 
     // iterate for number of epochs
     for (unsigned int i = 0; i < NUM_EPOCHS; ++i) {
-    // for (unsigned int i = 0; i < 5; ++i) {
         time(&start);
         printf("Epoch %d...\n", i);
         train_err = 0;
