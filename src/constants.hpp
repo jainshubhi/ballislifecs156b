@@ -43,6 +43,7 @@
 #define CNT_MOVIE_RATING  "gen/cnt_movie_rating.txt"
 #define USER_MOVIES       "gen/user_movies.txt"
 #define USER_DATES        "gen/user_dates.txt"
+#define BLEND_COUNTS      "gen/blend_counts.txt"
 
 // constants regarding data
 #define DATA_SIZE   102416306

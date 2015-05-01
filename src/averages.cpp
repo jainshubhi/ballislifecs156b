@@ -39,6 +39,10 @@ int main() {
         count_movie_rating[movie]++;
     }
 
+    int median_user_count = median(count_user_rating);
+    int median_movie_count = median(count_movie_rating);
+
+
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         avg_user_rating[i] /= (double) count_user_rating[i];
         avg_user_date[i] /= (double) count_user_rating[i];
@@ -67,6 +71,9 @@ int main() {
     int ** user_movies = new int*[NUM_USERS];
     int ** user_dates = new int*[NUM_USERS];
 
+    // high-high, high-low, low-high, low-low is the order
+    int * category_counts = new int[4];
+
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         user_movies[i] = new int[count_user_rating[i]];
         user_dates[i] = new int[count_user_rating[i]];
@@ -88,7 +95,30 @@ int main() {
         user_dates[curr_user][count] = reader->train_set[i][DATE_COL];
     }
 
+    for (unsigned int i = 0; i < BLEND_SIZE; ++i) {
+        // get blending counts
+        user = reader->blend_set[i][USER_COL];
+        movie = reader->blend_set[i][MOVIE_COL];
+        if (count_user_rating[user] > median_user_count) {
+            if (count_movie_rating[movie] > median_movie_count) {
+                category_counts[0]++;
+            }
+            else {
+                category_counts[1]++;
+            }
+        }
+        else {
+            if (count_movie_rating[movie] > median_movie_count) {
+                category_counts[2]++;
+            }
+            else {
+                category_counts[3]++;
+            }
+        }
+    }
+
     // write movies and dates that users have watched into file
+    vector_write_int(BLEND_COUNTS, category_counts, 4);
     matrix_write_var_int(USER_MOVIES, user_movies, NUM_USERS, count_user_rating);
     matrix_write_var_int(USER_DATES, user_dates, NUM_USERS, count_user_rating);
 
@@ -98,6 +128,7 @@ int main() {
         delete[] user_dates[i];
     }
 
+    delete[] category_counts;
     delete[] count_user_rating;
     delete[] user_movies;
     delete[] user_dates;
