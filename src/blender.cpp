@@ -57,27 +57,23 @@ int main(int argc, const char * argv[]) {
     for (unsigned int i = 0; i < BLEND_SIZE; ++i) {
         user = reader->blend_set[i][USER_COL];
         movie = reader->blend_set[i][MOVIE_COL];
-        if (count_user_rating[user] > median_user_count) {
-            if (count_movie_rating[movie] > median_movie_count) {
-                hh[hh_ind][USER_COL] = user;
-                hh[hh_ind][MOVIE_COL] = movie;
+        if (count_user_rating[user] > mean_user_count) {
+            if (count_movie_rating[movie] > mean_movie_count) {
+                // put model info in hh[hh_ind][0 ... NUM_MODELS - 1]
                 hh_ind++;
             }
             else {
-                hh[hh_ind][USER_COL] = user;
-                hh[hh_ind][MOVIE_COL] = movie;
+                // put model info in hl[hl_ind][0 ... NUM_MODELS - 1]
                 hl_ind++;
             }
         }
         else {
-            if (count_movie_rating[movie] > median_movie_count) {
-                hh[hh_ind][USER_COL] = user;
-                hh[hh_ind][MOVIE_COL] = movie;
+            if (count_movie_rating[movie] > mean_movie_count) {
+                // put model info in lh[lh_ind][0 ... NUM_MODELS - 1]
                 lh_ind++;
             }
             else {
-                hh[hh_ind][USER_COL] = user;
-                hh[hh_ind][MOVIE_COL] = movie;
+                // put model info in ll[ll_ind][0 ... NUM_MODELS - 1]
                 ll_ind++;
             }
         }

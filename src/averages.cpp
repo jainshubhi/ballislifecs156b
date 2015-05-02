@@ -39,8 +39,8 @@ int main() {
         count_movie_rating[movie]++;
     }
 
-    int median_user_count = median(count_user_rating);
-    int median_movie_count = median(count_movie_rating);
+    int mean_user_count = mean(count_user_rating, NUM_USERS);
+    int mean_movie_count = mean(count_movie_rating, NUM_MOVIES);
 
 
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
@@ -99,8 +99,8 @@ int main() {
         // get blending counts
         user = reader->blend_set[i][USER_COL];
         movie = reader->blend_set[i][MOVIE_COL];
-        if (count_user_rating[user] > median_user_count) {
-            if (count_movie_rating[movie] > median_movie_count) {
+        if (count_user_rating[user] > mean_user_count) {
+            if (count_movie_rating[movie] > mean_movie_count) {
                 category_counts[0]++;
             }
             else {
@@ -108,7 +108,7 @@ int main() {
             }
         }
         else {
-            if (count_movie_rating[movie] > median_movie_count) {
+            if (count_movie_rating[movie] > mean_movie_count) {
                 category_counts[2]++;
             }
             else {

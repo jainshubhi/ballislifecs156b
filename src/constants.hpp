@@ -20,7 +20,15 @@
 #define DATE_COL   2
 #define RATING_COL 3
 
-// files for learned values
+// files for blend and qual predictions
+// svd
+#define SVD_BLEND  "gen/svd_blend.txt"
+#define SVD_QUAL   "gen/svd_qual.txt"
+// knn
+#define KNN_BLEND  "gen/knn_blend.txt"
+#define KNN_QUAL   "gen/knn_qual.txt"
+
+// this stuff should be removed...
 // svd
 #define SVD_U_FILE       "gen/svd_u.txt"
 #define SVD_V_FILE       "gen/svd_v.txt"
@@ -58,8 +66,8 @@
 // constants regarding learning
 #define FEAT_ADJ_RATE 0.015
 #define BIAS_ADJ_RATE 0.01
-#define NUM_FEATS     50
-#define NUM_EPOCHS    30
+#define NUM_FEATS     100
+#define NUM_EPOCHS    40
 #define TIME_BINS     30
 #define BIN_SIZE      75
 #define BETA          0.4

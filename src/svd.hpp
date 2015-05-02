@@ -23,21 +23,10 @@ public:
 
     void train();
     void write();
+    void pred_blend();
     void pred();
 
 private:
-    /* TODO
-     * implicit_features
-     * userDev
-     * itemBinBias
-     *
-     * user_c
-     * user_time_c
-     *
-     * user_alpha
-     */
-
-
     // learning rates
     double gamma1 = GAMMA_1;
     double gamma2 = GAMMA_2;

@@ -58,6 +58,15 @@ double bound(double x) {
     return x;
 }
 
+
+int mean(int * x, int length) {
+    int sum = 0;
+    for (unsigned int i = 0; i < length; ++i) {
+        sum += x[i];
+    }
+    return sum / length;
+}
+
 // check that a number refers to a real user
 bool check_user(int user) {
     if ((user >= 0) && (user < NUM_USERS)) {
