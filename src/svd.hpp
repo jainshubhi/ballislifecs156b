@@ -43,6 +43,7 @@ private:
     double * user_bias;
     int * count_user_rating;
     double * avg_user_date;
+    int * count_user_unique_dates;
 
     // movie averages and counts
     double * movie_bias;

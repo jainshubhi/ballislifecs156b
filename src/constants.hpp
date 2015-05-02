@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-// to change between um and mu these next few lines must be changed
-#define DATA_FILE  "data/um/all.dta"
-#define IDX_FILE   "data/um/all.idx"
+// to change between um, ut, mu these next few lines must be changed
+#define DATA_FILE  "data/ut/all.dta"
+#define IDX_FILE   "data/ut/all.idx"
 #define QUAL_FILE  "data/um/qual.dta"
 #define OUT_FILE   "predictions.txt"
 #define USER_COL   0
@@ -52,6 +52,7 @@
 #define USER_MOVIES       "gen/user_movies.txt"
 #define USER_DATES        "gen/user_dates.txt"
 #define BLEND_COUNTS      "gen/blend_counts.txt"
+#define USER_DATE_COUNTS  "gen/user_date_counts.txt"
 
 // constants regarding data
 #define DATA_SIZE   102416306

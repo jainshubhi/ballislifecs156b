@@ -11,17 +11,23 @@ idx = pd.read_csv(idx_in, sep=' ', names=['idx'])
 
 # join data and idx
 df = pd.DataFrame()
-df['user', 'movie', 'date', 'rating'] = data['user', 'movie', 'date', 'rating']
+df['user'] = data['user']
+df['movie'] = data['movie']
+df['date'] = data['date']
+df['rating'] = data['rating']
 df['idx'] = idx['idx']
 
 # sort
 df.sort(['user', 'date'], ascending=[True, True], inplace=True)
 
 # separate again
-data = df['user', 'movie', 'date', 'rating']
-idx = df['idx']
+new_data = pd.DataFrame()
+new_data['user'] = df['user']
+new_data['movie'] = df['movie']
+new_data['date'] = df['date']
+new_data['rating'] = df['rating']
+new_idx = df['idx']
 
 # put back in files
-data.to_csv(data_out, sep=' ', header=False, index=False)
-idx.to_csv(idx_out, sep=' ', header=False, index=False)
-
+new_data.to_csv(data_out, sep=' ', header=False, index=False)
+new_idx.to_csv(idx_out, sep=' ', header=False, index=False)

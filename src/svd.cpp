@@ -33,10 +33,12 @@ SvdLearner::SvdLearner() {
     time(&start);
     printf("Initializing SvdLearner...\n");
 
+
     // initialize all biases
     this->user_bias = new double[NUM_USERS];
     this->count_user_rating = new int[NUM_USERS];
     this->avg_user_date = new double[NUM_USERS];
+    this->count_user_unique_dates = new int[NUM_USERS];
 
     this->movie_bias = new double[NUM_MOVIES];
     this->count_movie_rating = new int[NUM_MOVIES];
@@ -59,6 +61,7 @@ SvdLearner::SvdLearner() {
     vector_read(AVG_USER_DATE, this->avg_user_date, NUM_USERS);
     vector_read(AVG_MOVIE_RATING, this->movie_bias, NUM_MOVIES);
     vector_read_int(CNT_MOVIE_RATING, this->count_movie_rating, NUM_MOVIES);
+    vector_read_int(USER_DATE_COUNTS, count_user_unique_dates, NUM_USERS);
 
     // initialize U, V with small random numbers
     // initialize user_movies, user_dates
@@ -78,19 +81,16 @@ SvdLearner::SvdLearner() {
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         this->U[i] = new double[NUM_FEATS];
         this->user_movies[i] = new int[this->count_user_rating[i]];
-        this->user_dates[i] = new int[this->count_user_rating[i]];
-        this->user_time_bias[i] = new double[this->count_user_rating[i]];
-        this->user_time_c[i] = new double[this->count_user_rating[i]];
+        this->user_dates[i] = new int[this->count_user_unique_dates[i]];
+        this->user_time_bias[i] = new double[this->count_user_unique_dates[i]];
+        this->user_time_c[i] = new double[this->count_user_unique_dates[i]];
 
         for (unsigned int j = 0; j < NUM_FEATS; ++j) {
             this->U[i][j] = small_rand();
         }
 
-        for (unsigned int j = 0; j < this->count_user_rating[i]; ++j) {
+        for (unsigned int j = 0; j < this->count_user_unique_dates[i]; ++j) {
             this->user_time_bias[i][j] = small_pos_rand();
-        }
-
-        for (unsigned int j = 0; j < this->count_user_rating[i]; ++j) {
             this->user_time_c[i][j] = small_pos_rand();
         }
     }
@@ -119,16 +119,18 @@ SvdLearner::SvdLearner() {
 
 // Destructor
 SvdLearner::~SvdLearner() {
-    // Delete U
+    printf("Deinitializing SvdLearner...\n");
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         delete[] this->U[i];
         delete[] this->user_movies[i];
         delete[] this->user_dates[i];
+        delete[] this->user_time_bias[i];
+        delete[] this->user_time_c[i];
     }
 
-    // Delete V
     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
         delete[] this->V[i];
+        delete[] this->item_bin_bias[i];
     }
 
     delete[] this->U;
@@ -142,6 +144,7 @@ SvdLearner::~SvdLearner() {
     delete[] this->avg_user_date;
     delete[] this->movie_bias;
     delete[] this->count_movie_rating;
+    delete[] this->count_user_unique_dates;
 
     delete[] this->implicit_c;
     delete[] this->temp_implicit_c;
@@ -334,7 +337,7 @@ void SvdLearner::train() {
 
 void SvdLearner::pred_blend() {
     int user, rating, movie, date, temp = -0, date_temp = 0, user_date_count = -1, item_bin, date_flag;
-    double feature_c, predict, n, alpha, dev, user_time_b, err = 0;
+    double feature_c, predict, n, alpha, dev, user_time_b, user_time_c_bias, err = 0, sum_b, sum_c;
 
     for (unsigned int i = 0; i < BLEND_SIZE; ++i) {
         user = this->reader->blend_set[i][USER_COL];
@@ -352,10 +355,6 @@ void SvdLearner::pred_blend() {
             date_temp = 0;
             user_date_count = -1;
         }
-        if (date != date_temp) {
-            user_date_count++;
-            date_temp = date;
-        }
 
         // calculate prediction
         // TODO this will be replaced with the more complicated formula eventually
@@ -366,10 +365,35 @@ void SvdLearner::pred_blend() {
 
         // predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
 
+        // Check if day was in training set and get day bias
+        sum_b = 0;
+        sum_c = 0;
+        user_date_count = -1;
+        for (unsigned int j = 0; j < count_user_unique_dates[user]; ++j) {
+            sum_b += this->user_time_bias[user][j];
+            sum_c += this->user_time_c[user][j];
+            if (user_dates[user][j] == date) {
+                user_date_count = j;
+            }
+        }
+        // if date was there then use bias
+        if (user_date_count) {
+            user_time_b = this->user_time_bias[user][user_date_count];
+            user_time_c_bias = user_time_c[user][user_date_count];
+        }
+        // otherwise use average
+        else {
+            // user_time_b = sum_b / (double) count_user_unique_dates[user];
+            // user_time_c_bias = sum_c / (double) count_user_unique_dates[user];
+            user_time_b = 0;
+            user_time_c_bias = 0;
+        }
+
+
         // Get user time bias and alpha
         alpha = user_alpha[user];
         dev = dev_ut(date, this->avg_user_date[user]);
-        user_time_b = 0;
+        user_time_b = this->user_time_bias[user][user_date_count];
 
         // Get item bin number and bias
         item_bin = (int) floor((float) date / (float) BIN_SIZE);
@@ -379,7 +403,7 @@ void SvdLearner::pred_blend() {
 
         predict = (AVG_RATING + user_bias[user]
             + (movie_bias[movie] + item_bin_bias[movie][item_bin])
-                * (user_c[user] + user_time_c[user][user_date_count])
+                * (user_c[user] + user_time_c_bias)
              + alpha * dev + user_time_b + feature_c);
 
         predict = bound(predict);
@@ -390,8 +414,8 @@ void SvdLearner::pred_blend() {
 }
 
 void SvdLearner::pred() {
-    int user, movie, date, temp = 0, date_temp = 0, user_date_count = -1, item_bin;
-    double feature_c, predict, n, alpha, dev, user_time_b;
+    int user, movie, date, temp = 0, user_date_count, item_bin;
+    double feature_c, predict, n, alpha, dev, user_time_b, user_time_c_bias, sum_b, sum_c;
 
     ofstream out_file;
     out_file.open(OUT_FILE);
@@ -406,12 +430,6 @@ void SvdLearner::pred() {
             n = inv_sqrt(this->count_user_rating[user]);
             this->get_implicit_c(user, n);
             temp = user;
-            date_temp = 0;
-            user_date_count = -1;
-        }
-        if (date != date_temp) {
-            user_date_count++;
-            date_temp = date;
         }
 
         // calculate prediction
@@ -423,23 +441,45 @@ void SvdLearner::pred() {
 
         // predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
 
+        // Check if day was in training set and get day bias
+        sum_b = 0;
+        sum_c = 0;
+        user_date_count = -1;
+        for (unsigned int j = 0; j < count_user_unique_dates[user]; ++j) {
+            sum_b += this->user_time_bias[user][j];
+            sum_c += this->user_time_c[user][j];
+            if (user_dates[user][j] == date) {
+                user_date_count = j;
+            }
+        }
+        // if date was there then use bias
+        if (user_date_count) {
+            user_time_b = this->user_time_bias[user][user_date_count];
+            user_time_c_bias = user_time_c[user][user_date_count];
+        }
+        // otherwise use average
+        else {
+            // user_time_b = sum_b / (double) count_user_unique_dates[user];
+            // user_time_c_bias = sum_c / (double) count_user_unique_dates[user];
+            user_time_b = 0;
+            user_time_c_bias = 0;
+        }
+
         // Get user time bias and alpha
         alpha = user_alpha[user];
         // dev = this->user_dates[user][user_date_count] - this->avg_user_date[user];
         dev = dev_ut(this->user_dates[user][user_date_count], this->avg_user_date[user]);
-        user_time_b = this->user_time_bias[user][user_date_count];
 
         // Get item bin number and bias
         item_bin = (int) floor((float) date / (float) BIN_SIZE);
 
-        // printf("item_bin %f\n", item_bin_bias[movie][item_bin]);
-        // printf("user_date_count %f\n", user_time_c[user][user_date_count]);
-
         // /* REAL PREDICTION THING
-        predict = (AVG_RATING + user_bias[user]
-            + (movie_bias[movie] + item_bin_bias[movie][item_bin])
-                * (user_c[user] + user_time_c[user][user_date_count])
-             + alpha * dev + user_time_b + feature_c);
+        predict =
+            AVG_RATING
+            + user_bias[user]
+            + (movie_bias[movie] + item_bin_bias[movie][item_bin]) * (user_c[user] + user_time_c_bias)
+            + alpha * dev
+            + user_time_b + feature_c;
 
         predict = bound(predict);
 
