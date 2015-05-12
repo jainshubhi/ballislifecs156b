@@ -2,16 +2,16 @@
 
 int main() {
     // read data
-    // DataReader * reader = new DataReader;
+    DataReader * reader = new DataReader;
 
     // read qual
-    // reader->read_qual();
+    reader->read_qual();
 
     // init learner
     KnnLearner knn;
 
     // set reader
-    // knn.set_dr(reader);
+    knn.set_dr(reader);
 
     // learn parameters
     knn.train();
@@ -24,36 +24,43 @@ KnnLearner::KnnLearner() {
     printf("Initializing KnnLearner...\n");
 
     this->s = new double*[NUM_MOVIES];
-    this->ratings = new int*[NUM_MOVIES];
+    // this->ratings = new int*[NUM_MOVIES];
+    // this->count_movie_rating = new int[NUM_MOVIES];
     // this->ratings_2 = new int*[NUM_MOVIES];
-
-    printf("a\n");
 
     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
         this->s[i] = new double[NUM_MOVIES];
     }
 
-    printf("b\n");
+    // vector_read_int(CNT_MOVIE_RATING, this->count_movie_rating, NUM_MOVIES);
 
-    for (unsigned int i = 0; i < NUM_USERS; ++i) {
-        this->ratings[i] = new int[NUM_MOVIES];
-        // this->ratings_2[i] = new int[NUM_MOVIES];
-    }
-
-    printf("c\n");
+    // for (unsigned int i = 0; i < NUM_USERS; ++i) {
+    //     this->ratings[i] = new int[this->count_movie_rating[i]];
+    //     // this->ratings_2[i] = new int[NUM_MOVIES];
+    // }
 
     this->N = new int[K];
     this->sim = new int[NUM_MOVIES];
 
-    printf("e\n");
+    // TODO: FIX INPUT OF RATINGS
+    // matrix_read_int(USER_MOVIES, this->ratings, NUM_USERS, NUM_MOVIES);
 
-    this->fill_ratings();
+    printf("a\n");
 
-    printf("f\n");
+    for (unsigned int i = 0; i < TRAIN_SIZE; ++i) {
+        int rating = this->reader->train_set[i][RATING_COL];
+        pair<int, int> loc (this->reader->train_set[i][USER_COL], this->reader->train_set[i][MOVIE_COL]);
+        if (rating > 0) {
+            this->ratings_map[loc] = rating;
+            // printf("%d\n", rating);
+        }
+    }
+
+    printf("b\n");
 
     this->compute_similarity_coef();
 
-    printf("d\n");
+    printf("c\n");
 
     time(&end);
     printf("KnnLearner initialized. Took %.f seconds.\n", difftime(end, start));
@@ -67,17 +74,18 @@ KnnLearner::~KnnLearner() {
         delete[] this->s[i];
     }
 
-    for (unsigned int i = 0; i < NUM_USERS; ++i) {
-        delete[] this->ratings[i];
-        // delete[] this->ratings_2[i];
-    }
+    // for (unsigned int i = 0; i < NUM_USERS; ++i) {
+    //     delete[] this->ratings[i];
+    //     // delete[] this->ratings_2[i];
+    // }
 
     delete[] this->s;
-    delete[] this->ratings;
+    // delete[] this->ratings;
     // delete[] this->ratings_2;
 
     delete[] this->N;
     delete[] this->sim;
+    // delete[] this->count_movie_rating;
 }
 
 // sets the data to the passed value
@@ -94,14 +102,14 @@ void KnnLearner::compute_similarity_coef() {
     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
         for (unsigned int j = 0; j < NUM_MOVIES; ++j) {
             U = compute_U(i, j);
-            printf("g\n");
             int size_U = U.size();
-            printf("Size of u is %d\n", size_U);
             double se = 0;
 
             for (unsigned int u = 0; u < size_U; ++u) {
-                se += (this->ratings[U[u]][i] - this->ratings[U[u]][j]) *
-                (this->ratings[U[u]][i] - this->ratings[U[u]][j]);
+                pair<int, int> loc1 (U[u], i);
+                pair<int, int> loc2 (U[u], j);
+                se += (this->ratings_map[loc1] - this->ratings_map[loc2]) *
+                (this->ratings_map[loc1] - this->ratings_map[loc2]);
             }
             this->s[i][j] = size_U / (se + ALPHA);
         }
@@ -113,17 +121,14 @@ vector <int> KnnLearner::compute_U(int i, int j) {
     vector <int> U;
 
     for (unsigned int k = 0; k < NUM_USERS; ++k) {
-        if (ratings[k][i] > 0 && ratings[k][j] > 0) {
+        pair<int, int> loc1 (k, i);
+        pair<int, int> loc2 (k, j);
+        if (this->ratings_map[loc1] > 0 && this->ratings_map[loc2] > 0) {
             U.push_back(k);
         }
     }
 
     return U;
-}
-
-// fill ratings matrix with appropriate data
-void KnnLearner::fill_ratings() {
-    matrix_read_int(USER_MOVIES, this->ratings, NUM_USERS, NUM_MOVIES);
 }
 
 // calculate neighboring items that user has rated with top similarity coef
@@ -144,7 +149,8 @@ void KnnLearner::sort_neighbors(int user, int movie) {
 
     for (unsigned int i = 0; i < K; ++i) {
         for (unsigned int j = 0; j < NUM_MOVIES; ++j) {
-            if (sim[j] > highest_val && ratings[user][j] > 0 && j != movie) {
+            pair<int, int> loc (user, j);
+            if (sim[j] > highest_val && this->ratings_map[loc] > 0 && j != movie) {
                 highest_val = sim[j];
                 highest_movie = j;
             }
@@ -175,9 +181,10 @@ void KnnLearner::train() {
 
         for (unsigned int j = 0; j < K; ++j) {
             if (N[j] > 0) {
+                pair<int, int> loc (user, N[j]);
                 coef = s[movie][N[j]];
 
-                numerator += coef * ratings[user][N[j]];
+                numerator += coef * this->ratings_map[loc];
                 denominator += coef;
             }
         }

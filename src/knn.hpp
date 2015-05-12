@@ -8,6 +8,8 @@
 #include "compute.cpp"
 #endif
 
+#include <map>
+
 class KnnLearner {
 public:
     KnnLearner();
@@ -16,7 +18,6 @@ public:
     void set_dr(DataReader * reader);
     void compute_similarity_coef();
     vector <int> compute_U(int i, int j);
-    void fill_ratings();
     void sort_neighbors(int user, int movie);
     void train();
     void pred();
@@ -26,14 +27,18 @@ private:
     double ** s;
 
     // movies each user has watched
-    int ** ratings;
+    // int ** ratings;
     // int ** ratings_2;
+    map<pair<int,int>,int> ratings_map;
 
     // neighbors for each item/user
     int * N;
 
     // similarity coefs for one user
     int * sim;
+
+    // movie count
+    // int * count_movie_rating;
 
     // data reader
     DataReader * reader;
