@@ -1,10 +1,10 @@
 import pandas as pd
 
-data_in = 'data/um/all.dta'
-data_out = 'data/ut/all.dta'
+data_in = '../data/um/all.dta'
+data_out = '../data/ut/all.dta'
 
-idx_in = 'data/um/all.idx'
-idx_out = 'data/ut/all.idx'
+idx_in = '../data/um/all.idx'
+idx_out = '../data/ut/all.idx'
 
 data = pd.read_csv(data_in, sep=' ', names=['user', 'movie', 'date', 'rating'])
 idx = pd.read_csv(idx_in, sep=' ', names=['idx'])
