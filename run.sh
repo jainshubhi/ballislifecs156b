@@ -5,9 +5,9 @@ make all
 ./bin/averages
 
 # run all model learners
-./bin/svd
-# these two are not implemented yet
-# ./bin/knn
+# ./bin/svd
+./bin/knn
+# this is not implemented yet
 # ./bin/rbm
 
 # run blender

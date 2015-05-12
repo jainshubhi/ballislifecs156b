@@ -80,3 +80,7 @@
 #define TRAIN_SET  1
 #define VALID_SET  2
 #define BLEND_SET  3
+
+// constants regarding clustering
+#define K      35
+#define ALPHA  0.1 // still figuring out what this is
