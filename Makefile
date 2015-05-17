@@ -30,7 +30,7 @@ $(OBJ)/knn.o:  $(SRC)/knn.cpp $(SRC)/knn.hpp $(SRC)/DataReader.hpp $(SRC)/comput
 
 blender: $(OBJ)/blender.o
 
-$(OBJ)/blender.o:  $(SRC)/blender.cpp $(SRC)/blender.hpp $(SRC)/DataReader.hpp $(SRC)/compute.cpp $(SRC)/constants.hpp
+$(OBJ)/blender.o:  $(SRC)/blender.cpp $(SRC)/blender.hpp $(SRC)/DataReader.hpp $(SRC)/compute.cpp $(SRC)/constants.hpp $(SRC)/linear_regression.hpp
 	$(CXX) -c $(CXXFLAGS) $(SRC)/blender.cpp -o $(OBJ)/blender.o
 	$(CXX) $(OBJ)/blender.o -o $(BIN)/blender
 

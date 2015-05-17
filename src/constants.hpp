@@ -14,7 +14,6 @@
 #define DATA_FILE  "data/ut/all.dta"
 #define IDX_FILE   "data/ut/all.idx"
 #define QUAL_FILE  "data/um/qual.dta"
-#define OUT_FILE   "predictions.txt"
 #define USER_COL   0
 #define MOVIE_COL  1
 #define DATE_COL   2
@@ -27,21 +26,12 @@
 // knn
 #define KNN_BLEND  "gen/knn_blend.txt"
 #define KNN_QUAL   "gen/knn_qual.txt"
+// rbm
+#define RBM_BLEND  "gen/rbm_blend.txt"
+#define RBM_QUAL   "gen/rbm_qual.txt"
 
-// this stuff should be removed...
-// svd
-#define SVD_U_FILE       "gen/svd_u.txt"
-#define SVD_V_FILE       "gen/svd_v.txt"
-#define USER_BIAS_FILE   "gen/user_bias.txt"
-#define MOVIE_BIAS_FILE  "gen/movie_bias.txt"
-#define IMP_FEATS_FILE   "gen/imp_feats.txt"
-#define BIN_BIAS_FILE    "gen/bin_bias.txt"
-#define TIME_BIAS_FILE   "gen/time_bias.txt"
-#define USER_ALPHA_FILE  "gen/user_alpha.txt"
-#define USER_C_FILE      "gen/user_c.txt"
-#define USER_TIMEC_FILE  "gen/user_time_c.txt"
-// knn
-#define KNN_FILE         "gen/knn.txt"
+// place holder for filenames
+#define VOID_FILE  "x"
 
 // files for initial biases
 #define AVG_USER_RATING   "gen/avg_user_rating.txt"
@@ -68,7 +58,7 @@
 #define FEAT_ADJ_RATE 0.015
 #define BIAS_ADJ_RATE 0.01
 #define NUM_FEATS     100
-#define NUM_EPOCHS    40
+#define NUM_EPOCHS    1
 #define TIME_BINS     30
 #define BIN_SIZE      75
 #define BETA          0.4

@@ -1,4 +1,7 @@
+#ifndef COMPUTE_CPP
+#define COMPUTE_CPP
 #include "compute.cpp"
+#endif
 
 int main() {
     // read in data

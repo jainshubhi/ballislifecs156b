@@ -22,9 +22,7 @@ public:
         unsigned int item_bin, int user_date_count, double dev);
 
     void train();
-    void write();
-    void pred_blend();
-    void pred();
+    void pred(string outfile, bool is_qual, bool write);
 
 private:
     // learning rates
