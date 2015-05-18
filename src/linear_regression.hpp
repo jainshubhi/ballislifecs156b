@@ -31,13 +31,10 @@ void calculate_gradient(double ** y, double * x, double lambda,
     int gradient;
     for (int i = 0; i < d; ++i) {
         gradient = 0;
-        // calculate (y - w'x)'
+        // calculate -2x(y - w'x)'
         for (int j = 0; j < n; ++j) {
-            gradient += (y[i][j] - weights[i] * x[j]);
+            gradient += -2*x[j]*(y[i][j] - weights[i] * x[j]);
         }
-
-        // multiply by -2 * x
-        // this is annoying...
 
         // add 2 * lambda * w
         gradient += 2 * lambda * weights[i];
