@@ -18,77 +18,47 @@ data = get_Data_fun()
 # There are F latent features that will be the number of hidden units.
 # So h_j with j = 1, ..., F
 
-<<<<<<< HEAD
-# Number of ratings (1, 2, 3, 4, 5)
-global K = 5
-# Number of hidden units (size of h)
-global features = 100
-
-####################
-def sumOverFeatures(movie, rating, F, h, W):
-    '''helper function for pCalcV'''
-    tot = 0
-    for hidden in range(F):s
-        tot += h(hidden)*W(movie, hidden, rating)
 =======
-
 NUM_RATINGS = 5
 NUM_FACTORS = 100
 NUM_MOVIES = 0
 
-def sumOverFeatures(i, rating, h, W):
+def sumOverFeatures(movie, rating, h, W):
     '''helper function for pCalcV'''
     tot = 0
-    for j in range(NUM_FACTORS):
-        tot += h(j) * W(i, j, k)
->>>>>>> 93ab326e90d989dae2ecaf6a572cf6678dae1d7e
-    return tot
+    for hidden in range(NUM_FACTORS):s
+        tot += h(hidden)*W(movie, hidden, rating)
 
 # for pCalcV and pCalch, only iterate over populated columns of V.
 # V will be 5x17770 and only rated movies by the user will have populated
 # columns.
 
-def pCalcV(V, h, W, B, F):
+def pCalcV(V, h, W, B):
     '''V is an empty Kxm matrix, with K the number of ratings and m
      the number of movies.  h is a binary vector for the hidden features.
      W_i_j^k is the interaction parameter between feature j and rating k
-<<<<<<< HEAD
      of movie i. B is the bias value matrix. B(i, k) is the bias for movie
-     i with rating k.  F is the number of hidden features.'''
-    for movie in range(m):
+     i with rating k.'''
+    for movie in range(NUM_MOVIES):
         # Only iterate over populated columns of V.
-        for rating in range(K):
+        for rating in range(NUM_RATINGS):
             num = exp(B(movie, rating) +
-                sumOverFeatures(movie, rating, F, h, W)
+                sumOverFeatures(movie, rating, h, W)
             den = 0
             for l in range(1, K):
                 den += (exp(B(movie, l) +
-                    sumOverFeatures(movie, l, F, h, W)))
-=======
-     of movie i. B is the bias value matrix. b_i^k is the bias for movie i
-     with rating k.  F is the number of hidden features.
-    for i in range(NUM_MOVIES):
-        for k in range(NUM_RATINGS):
-            num = exp(B(i, k) + sumOverFeatures(i, k, h, W))
-            den = 0
-            for l in range(1, K):
-                den += (exp(B(i, l) + sumOverFeatures(i, l, h, W)))
->>>>>>> 93ab326e90d989dae2ecaf6a572cf6678dae1d7e
-
+                    sumOverFeatures(movie, l, h, W)))
             V(rating, movie) = num/den
-
     return V
 
 def pCalch(V, h, W, b):
     '''All symbols are the same as above except here b is the
     bias vector for features.'''
-<<<<<<< HEAD
-    (K, m) = size(V)
     # Calculate probability of each h(j)
-    for hidden in range(F):
+    for hidden in range(NUM_FACTORS):
         term = 0
-        for movie in range(m):
-            for rating in range(K):
+        for movie in range(NUM_MOVIES):
+            for rating in range(NUM_RATINGS):
                 term += V(rating, movie)*W(movie, hidden, rating)
         # Assign p(h(hidden)=1 | V)
         h(hidden) = 1/(1+exp(-b(hidden) - term))
@@ -98,68 +68,32 @@ def pCalch(V, h, W, b):
 ### May not need these next two.
 ### Just found them in the paper. I don't use them
 ### but there is definitely a way to use them.
-def partition(movie, F, h, W, B):
+def partition(movie, h, W, B):
     Z = 0
-    for rating in range(K):
+    for rating in range(NUM_RATINGS):
         Z += exp(B(movie, rating) +
-            sumOverFeatures(movie, rating, F, h, W))
-=======
-    # h is a 1xF vector.  Not sure how to code this fact.
-    h = array(1, NUM_FACTORS)
-    # Calculate probability of each h(j)
-    for j in range(NUM_FACTORS):
-        term = 0
-        for i in range(NUM_MOVIES):
-            for k in range(1, NUM_RATINGS):
-                term += V(k, i)*W(i, j, k)
-        # Assign p(h(j)=1 | V)
-        h(j) = 1/(1+exp(-b(j) - term))
-
-    return h
-
-def partition(i, h, W, B):
-    Z = 0
-    for l in range(NUM_RATINGS):
-        Z += exp(B(i, l) + sumOverFeatures(i, l, h, W))
->>>>>>> 93ab326e90d989dae2ecaf6a572cf6678dae1d7e
+            sumOverFeatures(movie, rating, h, W))
     return Z
-
 
 def energy(V, h, W, B, b):
     term1 = 0
     term2 = 0
     term3 = 0
     term4 = 0
-<<<<<<< HEAD
-    for movie in range(m):
+    for movie in range(NUM_MOVIES):
         # In one set of loops, get first part of energy term.
-        for hidden in range(F):
-            for rating in range(K):
+        for hidden in range(NUM_FACTORS):
+            for rating in range(NUM_RATINGS):
                 term1 += W(movie, hidden, rating)*
                     h(hidden)*V(rating, movie)
-=======
-    for i in range(NUM_MOVIES):
-        # In one set of loops, get first part of energy term.
-        for j in range(NUM_FACTORS):
-            for k in range(NUM_RATINGS):
-                term1 += W(i, j, k) *h(j) * V(k, i)
->>>>>>> 93ab326e90d989dae2ecaf6a572cf6678dae1d7e
         # Within the outer loop, get 2nd part.
-        term2 += log(partition(movie, F, h, W, B))
+        term2 += log(partition(movie, h, W, B))
         # Get third part.
-<<<<<<< HEAD
-        for rating in range(K):
+        for rating in range(NUM_RATINGS):
             term3 += V(rating, movie)*B(movie, rating)
     # Finally, get last term.
-    for hidden in range(F):
+    for hidden in range(NUM_FACTORS):
         term4 += h(hidden)*b(hidden)
-=======
-        for k in range(NUM_RATINGS):
-            term3 += V(k, i) * B(i, k)
-    # Finally, get last term.
-    for j in range(F):
-        term4 += h(j) * b(j)
->>>>>>> 93ab326e90d989dae2ecaf6a572cf6678dae1d7e
     # Combine 4 terms to get energy.
     E = -term1 + term2 - term3 - term4
     return E
@@ -171,17 +105,17 @@ def energy(V, h, W, B, b):
 
 <<<<<<< HEAD
 
-def update_h(V, W, b, features, last, threshold):
+def update_h(V, W, b, last, threshold):
     '''For last epoch, we need to keep the probabilities in h to
     make predictions.  So last = 1 on last epoch.'''
     # Update hidden states:
     # Create an empty h vector 1xF
-    h = array(1, features)
-    h = pCalch(V, h, W, b, features)
+    h = array(1, NUM_FACTORS)
+    h = pCalch(V, h, W, b)
 
     # If the probability for h(hidden) is higher than rand_num, set to 1.
     if last != 1:
-        for hidden in range(features):
+        for hidden in range(NUM_FACTORS):
             if h(hidden) > threshold:
                 h(hidden) = 1
             else:
@@ -189,11 +123,11 @@ def update_h(V, W, b, features, last, threshold):
 
     return h
 
-def update_W(W, B, b, features, minibatch, learn_rate):
+def update_W(W, B, b, minibatch, learn_rate):
     # minibatch is a subset of the data.
     users = size(minibatch)
-    exp_data = array(movies, features, ratings)
-    exp_recon = array(movies, features, ratings)
+    exp_data = array(NUM_MOVIES, NUM_FACTORS, NUM_RATINGS)
+    exp_recon = array(NUM_MOVIES, NUM_FACTORS, NUM_RATINGS)
     for user in range(users):
         # Populate V:
         '''
@@ -209,37 +143,37 @@ def update_W(W, B, b, features, minibatch, learn_rate):
         rand_num = rand(0, 1)
 
         # Update hidden states.
-        h = update_h(V, W, b, features, 0, rand_num)
+        h = update_h(V, W, b, 0, rand_num)
 
         # See how often states are on together.  Add to exp_data.
-        for movie in range(m):
+        for movie in range(NUM_MOVIES):
             # only iterate over populated columns of V.
-            for feature in range(F):
-                for rating in range(K):
+            for feature in range(NUM_FACTORS):
+                for rating in range(NUM_RATINGS):
                     # entry will be 1 if rating for that movie is on
                     # with feature. Will be 0 otherwise.
                     exp_data(movie, feature, rating) +=
                         V(rating, movie)*h(feature)
 
         # Reconstruct visible states:
-        V = pCalcV(V, h, W, b, features)
+        V = pCalcV(V, h, W, b)
 
         # If the probability for V(rating, movie) is higher than rand_num,
         # set to 1.
-        for movie in range(m):
+        for movie in range(NUM_MOVIES):
             # Only iterate over populated columns of V.
-            for rating in range(K):
+            for rating in range(NUM_RATINGS):
                 if V(rating, movie) > rand_num:
                     V(rating, movie) = 1
                 else:
                     V(rating, movie) = 0
 
         # Update hidden states again:
-        h = update_h(V, W, b, features, 0, rand_num)
+        h = update_h(V, W, b, 0, rand_num)
 
-        for movie in range(m):
-            for feature in range(F):
-                for rating in range(K):
+        for movie in range(NUM_MOVIES):
+            for feature in range(NUM_FACTORS):
+                for rating in range(NUM_RATINGS):
                     # entry will be 1 if rating for that movie is on with
                     # feature. Will be 0 otherwise.
                     exp_recon(movie, feature, rating) +=
@@ -248,24 +182,4 @@ def update_W(W, B, b, features, minibatch, learn_rate):
     # Repeat above for all users in a mini-batch (Size between 10 and 100).
     # Average the exp_data and exp_recon by dividing by number of users.
     W += (learn_rate/users)*(exp_data - exp_recon)
-=======
-# Update hidden states:
-H = pCalch(V, h, W, b, F)
-
-# Get a random number between 0 and 1
-rand_num = rand(0, 1)
-
-# If the probability for H(j) is higher than rand_num, set to 1.
-for j in range(F):
-    if H(j) > rand_num:
-        H(j) = 1
-    else:
-        H(J) = 0
-# This happens for every update of H except the last one.
-# Use probabilities for the last update.
-
-# Update visible states:
-V = pCalcV(V, h, W, B, F)
-def exp_data(V, h, W, B, b, F):
-    '''Finds the expectation '''
->>>>>>> 93ab326e90d989dae2ecaf6a572cf6678dae1d7e
+    return W
