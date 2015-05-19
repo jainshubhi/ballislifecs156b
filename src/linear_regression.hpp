@@ -25,15 +25,22 @@ void inplace_sub(double * vec1, double * vec2, int length) {
     }
 }
 
-void calculate_gradient(double ** y, double * x, double lambda,
+void calculate_gradient(double * y, double ** x, double lambda,
     int n, int d, double * weights, double * grad) {
 
-    int gradient;
+    double gradient;
+    double * pred = new double[n];
+    for (int i = 0; i < n; ++i){
+      for (int j = 0; j < d; ++j){
+        pred[i] += w[j]* x[j][i];
+      }
+    }
+
     for (int i = 0; i < d; ++i) {
         gradient = 0;
         // calculate -2x(y - w'x)'
         for (int j = 0; j < n; ++j) {
-            gradient += -2*x[j]*(y[i][j] - weights[i] * x[j]);
+            gradient += -2 * x[i][j] * (y[j] - pred[j]);
         }
 
         // add 2 * lambda * w
@@ -42,6 +49,7 @@ void calculate_gradient(double ** y, double * x, double lambda,
         // set gradient
         grad[i] = gradient;
     }
+    delete[] pred;
 }
 
 double * linear_regression(double ** y, double * x, double lambda,
