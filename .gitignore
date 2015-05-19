@@ -1,6 +1,7 @@
 ## Our own gitignores:
 # ritvik's stuff
 blend.sh
+blend.py
 
 # all the data
 data/
