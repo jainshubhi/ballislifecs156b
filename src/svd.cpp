@@ -17,8 +17,8 @@ int main() {
     svd.train();
 
     // write predictions on qual and blend to file
-    svd.pred(SVD_BLEND, /* is_qual */ false, /* write */ true);
-    svd.pred(SVD_QUAL, /* is_qual */ true, /* write */ true);
+    svd.pred(SVD_BLEND, /* blend */ false, /* write */ true);
+    svd.pred(SVD_QUAL, /* qual */ true, /* write */ true);
 
     printf("Done.\n");
 
@@ -264,8 +264,6 @@ void SvdLearner::train() {
             date = this->reader->train_set[j][DATE_COL];
             rating = this->reader->train_set[j][RATING_COL];
 
-            // printf("user: %d movie: %d\n", user, movie);
-
             if (!(check_user(user) && check_movie(movie))) {
                 printf("Invalid user (%d) or movie (%d).\n", user, movie);
             }
@@ -314,9 +312,10 @@ void SvdLearner::train() {
 
             predict = bound(predict);
 
-            err = (double) rating - predict;
+            // basic prediction formula
+            // predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
 
-            // printf("error #%d: %f\n", j, err);
+            err = (double) rating - predict;
 
             train_err += err * err;
             this->update_features(user, movie, err);
@@ -336,9 +335,9 @@ void SvdLearner::train() {
         printf("Train RMSE: %f. Took %.f seconds.\n",
             sqrt(train_err / (double) TRAIN_SIZE), difftime(end, start));
 
-        // predict on blend set to get an idea of overfitting
-        if ((i % 5 == 0) && (i != 0) && (i != NUM_EPOCHS - 1)) {
-            // this->pred(VOID_FILE, /* is_qual */ false, /* do not write */ true);
+        // get RMSE on blend set every 5 epochs to get an idea of overfitting
+        if (((i + 1) % 5 == 0) && (i != 0) && (i != NUM_EPOCHS - 1)) {
+            this->pred(VOID_FILE, /* blend */ false, /* do not write */ false);
         }
     }
 }
@@ -361,16 +360,15 @@ void SvdLearner::pred(string predictions, bool is_qual, bool write) {
         printf("Predicting on blend set...\n");
     }
 
-    // if (write) {
-    //     outfile.open(predictions);
-    // }
+    if (write) {
+        outfile.open(predictions);
+    }
 
     for (unsigned int i = 0; i < size; ++i) {
         user = data[i][USER_COL];
         movie = data[i][MOVIE_COL];
         date = data[i][DATE_COL];
 
-        printf("0\n");
         // get info for current user and date if needed
         if (temp != user) {
             n = inv_sqrt(this->count_user_rating[user]);
@@ -378,50 +376,40 @@ void SvdLearner::pred(string predictions, bool is_qual, bool write) {
             temp = user;
         }
 
-        // basic prediction formula
-        // predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
-
         // calculate prediction
-        printf("a\n");
         feature_c = 0;
         for (unsigned int j = 0; j < NUM_FEATS; ++j) {
             feature_c += (U[user][j] + temp_implicit_c[j]) * V[movie][j];
         }
-        printf("b\n");
 
         // Check if day was in training set and get day bias
         sum_b = 0;
         sum_c = 0;
         user_date_count = -1;
-        printf("c\n");
         for (unsigned int j = 0; j < count_user_unique_dates[user]; ++j) {
             sum_b += this->user_time_bias[user][j];
             sum_c += this->user_time_c[user][j];
             if (user_dates[user][j] == date) {
                 user_date_count = j;
+                break;
             }
         }
-        printf("d\n");
         // if date was there then use bias
-        if (user_date_count) {
+        if (user_date_count >= 0) {
             user_time_b = this->user_time_bias[user][user_date_count];
             user_time_c_bias = user_time_c[user][user_date_count];
         }
         // otherwise use average or 0
         else {
-            user_time_b = sum_b / (double) count_user_unique_dates[user];
-            user_time_c_bias = sum_c / (double) count_user_unique_dates[user];
-            // user_time_b = 0;
-            // user_time_c_bias = 0;
+            // user_time_b = sum_b / (double) count_user_unique_dates[user];
+            // user_time_c_bias = sum_c / (double) count_user_unique_dates[user];
+            user_time_b = 0;
+            user_time_c_bias = 0;
         }
-        printf("e\n");
 
         // Get user time bias and alpha
         alpha = user_alpha[user];
-        printf("f\n");
-        // dev = this->user_dates[user][user_date_count] - this->avg_user_date[user];
-        dev = dev_ut(this->user_dates[user][user_date_count], this->avg_user_date[user]);
-        printf("g\n");
+        dev = dev_ut(date, this->avg_user_date[user]);
 
         // Get item bin number and bias
         item_bin = (int) floor((float) date / (float) BIN_SIZE);
@@ -433,7 +421,9 @@ void SvdLearner::pred(string predictions, bool is_qual, bool write) {
             + alpha * dev
             + user_time_b + feature_c;
 
-        printf("h\n");
+        // basic prediction formula
+        // predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+
         predict = bound(predict);
 
         // if blend set, then calculate the error
@@ -444,7 +434,6 @@ void SvdLearner::pred(string predictions, bool is_qual, bool write) {
 
         // write to file
         if (write) {
-            printf("i\n");
             outfile << predict;
             outfile << "\n";
         }

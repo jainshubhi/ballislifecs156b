@@ -14,6 +14,7 @@
 #define DATA_FILE  "data/ut/all.dta"
 #define IDX_FILE   "data/ut/all.idx"
 #define QUAL_FILE  "data/um/qual.dta"
+#define OUT_FILE   "pred/final_blend.txt"
 #define USER_COL   0
 #define MOVIE_COL  1
 #define DATE_COL   2
@@ -21,14 +22,14 @@
 
 // files for blend and qual predictions
 // svd
-#define SVD_BLEND  "gen/svd_blend.txt"
-#define SVD_QUAL   "gen/svd_qual.txt"
+#define SVD_BLEND  "pred/svd_blend_f150_e20.txt"
+#define SVD_QUAL   "pred/svd_qual_f150_e20.txt"
 // knn
-#define KNN_BLEND  "gen/knn_blend.txt"
-#define KNN_QUAL   "gen/knn_qual.txt"
+#define KNN_BLEND  "pred/knn_blend.txt"
+#define KNN_QUAL   "pred/knn_qual.txt"
 // rbm
-#define RBM_BLEND  "gen/rbm_blend.txt"
-#define RBM_QUAL   "gen/rbm_qual.txt"
+#define RBM_BLEND  "pred/rbm_blend.txt"
+#define RBM_QUAL   "pred/rbm_qual.txt"
 
 // place holder for filenames
 #define VOID_FILE  "x"
@@ -43,6 +44,7 @@
 #define USER_DATES        "gen/user_dates.txt"
 #define BLEND_COUNTS      "gen/blend_counts.txt"
 #define USER_DATE_COUNTS  "gen/user_date_counts.txt"
+#define BLEND_RATINGS     "gen/blend_only_ratings.txt"
 
 // constants regarding data
 #define DATA_SIZE   102416306
@@ -57,8 +59,8 @@
 // constants regarding learning
 #define FEAT_ADJ_RATE 0.015
 #define BIAS_ADJ_RATE 0.01
-#define NUM_FEATS     100
-#define NUM_EPOCHS    1
+#define NUM_FEATS     150
+#define NUM_EPOCHS    20
 #define TIME_BINS     30
 #define BIN_SIZE      75
 #define BETA          0.4

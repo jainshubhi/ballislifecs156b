@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
+#include <limits>
 
 #include <iostream>
 #include <sstream>
@@ -20,6 +21,8 @@
 #endif
 
 using namespace std;
+
+#define DOUBLE_INFINITY numeric_limits<double>::max()
 
 // returns random double between -0.01 and 0.01
 double small_rand() {

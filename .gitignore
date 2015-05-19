@@ -1,9 +1,13 @@
 ## Our own gitignores:
+# ritvik's stuff
+blend.sh
+
 # all the data
 data/
 
 # large code generated files
 gen/
+pred/
 
 # executables and object files
 bin/
