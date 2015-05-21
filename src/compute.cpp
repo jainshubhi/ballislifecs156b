@@ -36,6 +36,17 @@ double small_pos_rand() {
     return 2.0 * num / 10000.0;
 }
 
+// returns positive random double between 0 and 1
+double one_rand() {
+    int num = ((int) rand()) % 100;
+    return num / 100.0;
+}
+
+// returns random user for minibatch
+unsigned int minibatch_random() {
+    return ((unsigned int) (rand() * 14)) % NUM_USERS;
+}
+
 // returns +1 if positve, -1 if negative, 0 if zero
 int sign(double x) {
     if (x < 0) return -1;
@@ -125,27 +136,57 @@ double dot(double* vec_1, double* vec_2, unsigned int length) {
 //     return res;
 // }
 
+// frobenius norm for 2d matrices
 double frobenius_norm(double ** matrix, unsigned int r, unsigned int c) {
     double sum = 0.0;
     for (unsigned int i = 0; i < r; ++i) {
-        for (unsigned int j = 0; j < c; ++j) {
-            double val = matrix[i][j];
-            sum += val * val;
-        }
+        double val = matrix[i][i];
+        sum += val * val;
+    }
+    return sqrt(sum);
+}
+
+// frobenius norm for 3d matrices
+double frobenius_norm(double *** matrix, unsigned int r, unsigned int c, unsigned int h) {
+    double sum = 0.0;
+    for (unsigned int i = 0; i < r; ++i) {
+        double val = matrix[i][i][i];
+        sum += val * val;
     }
     return sqrt(sum);
 }
 
 // matrix subtraction of two double matrices
-double ** matrix_sub(double ** mat_1, double ** mat_2, unsigned int r, unsigned int c) {
-    double ** res = new double*[r];
+// sign will be positive 1 if we're adding and -1 for subtraction
+void matrix_add(double ** mat_1, double ** mat_2, unsigned int r, unsigned int c, int sign) {
     for (unsigned int i = 0; i < r; ++i) {
-        res[i] = new double[c];
         for (unsigned int j = 0; j < c; ++j) {
-            res[i][j] = mat_1[i][j] - mat_2[i][j];
+            mat_1[i][j] = mat_1[i][j] - (sign * mat_2[i][j]);
         }
     }
-    return res;
+}
+
+// matrix subtraction of two 3d double matrices
+// sign will be positive 1 if we're adding and -1 for subtraction
+void matrix_add(double *** mat_1, double *** mat_2, unsigned int r, unsigned int c, unsigned int h, int sign) {
+    for (unsigned int i = 0; i < r; ++i) {
+        for (unsigned int j = 0; j < c; ++j) {
+            for(unsigned int k = 0; k < h; ++k) {
+                mat_1[i][j][k] = mat_1[i][j][k] + (sign * mat_2[i][j][k]);
+            }
+        }
+    }
+}
+
+// scalar multiplication of a double 3d matrix
+void matrix_scalar_mult(double *** mat_1, double scalar, unsigned int r, unsigned int c, unsigned int h) {
+    for (unsigned int i = 0; i < r; ++i) {
+        for (unsigned int j = 0; j < c; ++j) {
+            for(unsigned int k = 0; k < h; ++k) {
+                mat_1[i][j][k] = mat_1[i][j][k] * scalar;
+            }
+        }
+    }
 }
 
 // read a double matrix from a file

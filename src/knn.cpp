@@ -10,9 +10,6 @@ int main() {
     // init learner
     KnnLearner knn;
 
-    // set reader
-    knn.set_dr(reader);
-
     // learn parameters
     knn.train();
 }
@@ -47,13 +44,17 @@ KnnLearner::KnnLearner() {
 
     printf("a\n");
 
+    this->set_dr(reader);
+
     for (unsigned int i = 0; i < TRAIN_SIZE; ++i) {
         int rating = this->reader->train_set[i][RATING_COL];
-        pair<int, int> loc (this->reader->train_set[i][USER_COL], this->reader->train_set[i][MOVIE_COL]);
+        printf("b\n");
         if (rating > 0) {
-            this->ratings_map[loc] = rating;
+            printf("d\n");
+            this->ratings_map[make_pair(this->reader->train_set[i][USER_COL], this->reader->train_set[i][MOVIE_COL])] = rating;
             // printf("%d\n", rating);
         }
+        printf("e\n");
     }
 
     printf("b\n");
@@ -106,10 +107,8 @@ void KnnLearner::compute_similarity_coef() {
             double se = 0;
 
             for (unsigned int u = 0; u < size_U; ++u) {
-                pair<int, int> loc1 (U[u], i);
-                pair<int, int> loc2 (U[u], j);
-                se += (this->ratings_map[loc1] - this->ratings_map[loc2]) *
-                (this->ratings_map[loc1] - this->ratings_map[loc2]);
+                se += (this->ratings_map[make_pair(U[u],i)] - this->ratings_map[make_pair(U[u],j)]) *
+                (this->ratings_map[make_pair(U[u],i)] - this->ratings_map[make_pair(U[u],j)]);
             }
             this->s[i][j] = size_U / (se + ALPHA);
         }
@@ -121,9 +120,7 @@ vector <int> KnnLearner::compute_U(int i, int j) {
     vector <int> U;
 
     for (unsigned int k = 0; k < NUM_USERS; ++k) {
-        pair<int, int> loc1 (k, i);
-        pair<int, int> loc2 (k, j);
-        if (this->ratings_map[loc1] > 0 && this->ratings_map[loc2] > 0) {
+        if (this->ratings_map[make_pair(k,i)] > 0 && this->ratings_map[make_pair(k,i)] > 0) {
             U.push_back(k);
         }
     }
@@ -149,8 +146,7 @@ void KnnLearner::sort_neighbors(int user, int movie) {
 
     for (unsigned int i = 0; i < K; ++i) {
         for (unsigned int j = 0; j < NUM_MOVIES; ++j) {
-            pair<int, int> loc (user, j);
-            if (sim[j] > highest_val && this->ratings_map[loc] > 0 && j != movie) {
+            if (sim[j] > highest_val && this->ratings_map[make_pair(user,j)] > 0 && j != movie) {
                 highest_val = sim[j];
                 highest_movie = j;
             }
@@ -181,10 +177,9 @@ void KnnLearner::train() {
 
         for (unsigned int j = 0; j < K; ++j) {
             if (N[j] > 0) {
-                pair<int, int> loc (user, N[j]);
                 coef = s[movie][N[j]];
 
-                numerator += coef * this->ratings_map[loc];
+                numerator += coef * this->ratings_map[make_pair(user,N[j])];
                 denominator += coef;
             }
         }
@@ -209,7 +204,7 @@ void KnnLearner::pred() {
     int user, movie = 0;
 
     ofstream out_file;
-    out_file.open(KNN_FILE);
+    // out_file.open(KNN_FILE);
 
     for (unsigned int i = 0; i < QUAL_SIZE; ++i) {
         user = this->reader->qual_set[i][USER_COL];

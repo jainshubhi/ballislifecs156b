@@ -12,6 +12,7 @@ int main() {
     double * avg_user_rating = new double[NUM_USERS];
     int * count_user_rating = new int[NUM_USERS];
     double * avg_user_date = new double[NUM_USERS];
+    int * user_offset = new int[NUM_USERS];
 
     int * count_user_unique_dates = new int[NUM_USERS];
 
@@ -50,6 +51,7 @@ int main() {
         }
         else {
             count_user_unique_dates[user]++;
+            user_offset[user] = i;
         }
         curr_user = user;
         curr_date = date;
@@ -76,12 +78,14 @@ int main() {
     vector_write(AVG_USER_DATE, avg_user_date, NUM_USERS);
     vector_write(AVG_MOVIE_RATING, avg_movie_rating, NUM_MOVIES);
     vector_write_int(CNT_MOVIE_RATING, count_movie_rating, NUM_MOVIES);
+    vector_write_int(USER_OFFSETS, user_offset, NUM_USERS);
 
     // delete everything but count_user_rating
     delete[] avg_user_rating;
     delete[] avg_user_date;
     delete[] avg_movie_rating;
     delete[] count_movie_rating;
+    delete[] user_offset;
 
     // get movies and dates watched for each user
     int ** user_movies = new int*[NUM_USERS];

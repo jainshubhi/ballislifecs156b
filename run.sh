@@ -6,9 +6,9 @@ make all
 
 # run all model learners
 # ./bin/svd
-./bin/knn
+# ./bin/knn
 # this is not implemented yet
-# ./bin/rbm
+./bin/rbm
 
 # run blender
 ./bin/blender
