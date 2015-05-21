@@ -264,10 +264,6 @@ void SvdLearner::train() {
             date = this->reader->train_set[j][DATE_COL];
             rating = this->reader->train_set[j][RATING_COL];
 
-            if (!(check_user(user) && check_movie(movie))) {
-                printf("Invalid user (%d) or movie (%d).\n", user, movie);
-            }
-
             // Get rating from raw data if we have a new user
             if (temp != user) {
                 // update implict feature for previous user
@@ -313,7 +309,8 @@ void SvdLearner::train() {
             predict = bound(predict);
 
             // basic prediction formula
-            // predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+            // ************************
+            predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
 
             err = (double) rating - predict;
 
@@ -422,7 +419,8 @@ void SvdLearner::pred(string predictions, bool is_qual, bool write) {
             + user_time_b + feature_c;
 
         // basic prediction formula
-        // predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+        // ************************
+        predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
 
         predict = bound(predict);
 
