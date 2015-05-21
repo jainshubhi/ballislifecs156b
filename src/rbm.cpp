@@ -204,7 +204,7 @@ void RbmLearner::update_W() {
         update_h(this->h_u[user], user, false, one_rand());
         for (unsigned int j = 0; j < size; ++j) {
             for (unsigned int k = 0; k < NUM_FACTORS; ++k) {
-                exp_data[V[j][0]][k][V[j][1] - 1] += h_u[user][k];
+                exp_data[V[j][0]][k][V[j][1] - 1] += this->h_u[user][k];
             }
         }
         // do it again for exp_recon
@@ -214,7 +214,7 @@ void RbmLearner::update_W() {
         update_h(this->h_u[user], user, false, one_rand());
         for (unsigned int j = 0; j < size; ++j) {
             for (unsigned int k = 0; k < NUM_FACTORS; ++k) {
-                exp_recon[V[j][0]][k][V[j][1] - 1] += h_u[user][k];
+                exp_recon[V[j][0]][k][V[j][1] - 1] += this->h_u[user][k];
             }
         }
     }
@@ -222,6 +222,27 @@ void RbmLearner::update_W() {
     matrix_add(exp_data, exp_recon, NUM_MOVIES, NUM_FACTORS, NUM_RATINGS, -1);
     matrix_scalar_mult(exp_data, (LEARNING_RATE / size), NUM_MOVIES, NUM_FACTORS, NUM_RATINGS);
     matrix_add(W, exp_data, NUM_MOVIES, NUM_FACTORS, NUM_RATINGS, 1);
+
+    // delete all pointer arrays
+    for (unsigned int i = 0; i < size; ++i) {
+        delete[] v[i];
+        delete[] V[i];
+    }
+
+    for(unsigned int i = 0; i < NUM_MOVIES; ++i) {
+        for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
+            delete[] exp_data[i][j];
+            delete[] exp_recon[i][j];
+        }
+        delete[] exp_data[i];
+        delete[] exp_recon[i];
+    }
+
+    delete[] exp_data;
+    delete[] exp_recon;
+    delete[] v;
+    delete[] V;
+
 }
 
 void RbmLearner::train() {
