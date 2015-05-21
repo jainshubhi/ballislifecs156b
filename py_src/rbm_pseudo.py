@@ -18,7 +18,6 @@ data = get_Data_fun()
 # There are F latent features that will be the number of hidden units.
 # So h_j with j = 1, ..., F
 
-=======
 NUM_RATINGS = 5
 NUM_FACTORS = 100
 NUM_MOVIES = 0
@@ -26,9 +25,9 @@ NUM_MOVIES = 0
 def sumOverFeatures(movie, rating, h, W):
     '''helper function for pCalcV'''
     tot = 0
-    for hidden in range(NUM_FACTORS):s
+    for hidden in range(NUM_FACTORS):
         tot += h(hidden)*W(movie, hidden, rating)
-
+    return tot
 # for pCalcV and pCalch, only iterate over populated columns of V.
 # V will be 5x17770 and only rated movies by the user will have populated
 # columns.
@@ -45,7 +44,7 @@ def pCalcV(V, h, W, B):
             num = exp(B(movie, rating) +
                 sumOverFeatures(movie, rating, h, W)
             den = 0
-            for l in range(1, K):
+            for l in range(K):
                 den += (exp(B(movie, l) +
                     sumOverFeatures(movie, l, h, W)))
             V(rating, movie) = num/den
@@ -102,8 +101,6 @@ def energy(V, h, W, B, b):
 
 
 # gradient = rate*(exp_data - exp_recon)
-
-<<<<<<< HEAD
 
 def update_h(V, W, b, last, threshold):
     '''For last epoch, we need to keep the probabilities in h to
