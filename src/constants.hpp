@@ -45,6 +45,7 @@
 #define BLEND_COUNTS      "gen/blend_counts.txt"
 #define USER_DATE_COUNTS  "gen/user_date_counts.txt"
 #define BLEND_RATINGS     "gen/blend_only_ratings.txt"
+#define USER_OFFSETS      "gen/user_offsets.txt"
 
 // constants regarding data
 #define DATA_SIZE   102416306
@@ -76,3 +77,10 @@
 // constants regarding clustering
 #define K      35
 #define ALPHA  0.1 // still figuring out what this is
+
+// constants regarding rbm
+#define NUM_FACTORS    100
+#define NUM_RATINGS    5
+#define LEARNING_RATE  0.1
+#define MINIBATCH_SIZE 100
+#define RBM_EPOCHS     5000

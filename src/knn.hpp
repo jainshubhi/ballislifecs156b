@@ -23,10 +23,10 @@ public:
     void pred();
 
 private:
-    // similarity coefficient
+    // similarity coefficient matrix for all movies
     double ** s;
 
-    // movies each user has watched
+    // rating for each user/movie combination
     // int ** ratings;
     // int ** ratings_2;
     map<pair<int,int>,int> ratings_map;
