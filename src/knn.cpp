@@ -174,6 +174,7 @@ void KnnLearner::train() {
         user = this->reader->train_set[i][USER_COL];
         movie = this->reader->train_set[i][MOVIE_COL];
         rating = this->reader->train_set[i][RATING_COL];
+        train_err = 0;
 
         for (unsigned int j = 0; j < K; ++j) {
             if (N[j] > 0) {

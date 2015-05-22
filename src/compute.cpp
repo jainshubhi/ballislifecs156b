@@ -38,8 +38,7 @@ double small_pos_rand() {
 
 // returns positive random double between 0 and 1
 double one_rand() {
-    int num = ((int) rand()) % 100;
-    return num / 100.0;
+    return rand() / ((double) RAND_MAX);
 }
 
 // returns random user for minibatch

@@ -19,7 +19,7 @@ public:
     double** p_calc_v(int** V, double* h, int user);
     void update_V(int** V, double** v, int user);
     int** create_v(int user);
-    double* p_calc_h(int** V, int user);
+    double* p_calc_h(int** V, int user, int create);
     void update_h(double* h, int user, bool last, double threshold);
     void create_minibatch();
     void update_W();

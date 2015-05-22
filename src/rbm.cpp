@@ -40,10 +40,12 @@ RbmLearner::RbmLearner() {
 
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         this->h_u[i] = new double[NUM_FACTORS];
+        for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
+            this->h_u[i][j] = one_rand();
+        }
     }
 
     this->minibatch = new int[MINIBATCH_SIZE];
-
     this->count_user_rating = new int[NUM_USERS];
     vector_read_int(CNT_USER_RATING, this->count_user_rating, NUM_USERS);
     this->user_offset = new int[NUM_USERS];
@@ -55,8 +57,13 @@ RbmLearner::RbmLearner() {
 }
 
 RbmLearner::~RbmLearner() {
+    time_t start, end;
+    time(&start);
+    printf("Deinitializing RbmLearner...\n");
+
     delete[] this->minibatch;
     delete[] this->count_user_rating;
+    delete[] this->user_offset;
 
     for(unsigned int i = 0; i < NUM_MOVIES; ++i) {
         for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
@@ -71,6 +78,9 @@ RbmLearner::~RbmLearner() {
 
     delete[] this->W;
     delete[] this->h_u;
+
+    time(&end);
+    printf("RbmLearner deinitialized. Took %.f seconds.\n", difftime(end, start));
 }
 
 // sets the data to the passed value
@@ -144,14 +154,26 @@ int** RbmLearner::create_v(int user) {
 }
 
 // fill up h with appropriate weight probabilities for each user
-double* RbmLearner::p_calc_h(int** V, int user) {
+// create is an integer which is 0 if this method is called after create_v and 1
+// otherwise
+double* RbmLearner::p_calc_h(int** V, int user, int create) {
     double* h = new double[NUM_FACTORS];
     int term, movie, rating, count = this->count_user_rating[user];
     for (unsigned int i = 0; i < NUM_FACTORS; ++i) {
         term = 0;
         for (unsigned int j = 0; j < count; ++j) {
             movie = V[j][0];
-            rating = V[j][1];
+            if (create == 0) {
+                for (unsigned int k = 1; k <= NUM_RATINGS; ++k) {
+                    if (V[j][k] == 1) {
+                        rating = V[j][k];
+                        break;
+                    }
+                }
+            }
+            else {
+                rating = V[j][1];
+            }
             term += this->W[movie][i][rating - 1];
         }
         h[i] = 1/(1 + exp(-1 * term));
@@ -183,7 +205,7 @@ void RbmLearner::create_minibatch() {
 void RbmLearner::update_W() {
     int** V;
     double **v;
-    int user, size;
+    int user, size, rating;
     // create third order tensors
     double*** exp_data = new double**[NUM_MOVIES];
     double*** exp_recon = new double**[NUM_MOVIES];
@@ -199,18 +221,24 @@ void RbmLearner::update_W() {
     for (unsigned int i = 0; i < MINIBATCH_SIZE; ++i) {
         user = this->minibatch[i];
         V = create_v(user);
-        size = this->count_user_rating[user];
-        this->h_u[user] = p_calc_h(V, user);
+        this->h_u[user] = p_calc_h(V, user, 0);
         update_h(this->h_u[user], user, false, one_rand());
+        size = this->count_user_rating[user];
         for (unsigned int j = 0; j < size; ++j) {
             for (unsigned int k = 0; k < NUM_FACTORS; ++k) {
-                exp_data[V[j][0]][k][V[j][1] - 1] += this->h_u[user][k];
+                for (unsigned int k = 1; k <= NUM_RATINGS; ++k) {
+                    if (V[j][k] == 1) {
+                        rating = V[j][k];
+                        break;
+                    }
+                }
+                exp_data[V[j][0]][k][rating - 1] += this->h_u[user][k];
             }
         }
         // do it again for exp_recon
         v = p_calc_v(V, this->h_u[user], user);
         update_V(V, v, user);
-        this->h_u[user] = p_calc_h(V, user);
+        this->h_u[user] = p_calc_h(V, user, 1);
         update_h(this->h_u[user], user, false, one_rand());
         for (unsigned int j = 0; j < size; ++j) {
             for (unsigned int k = 0; k < NUM_FACTORS; ++k) {
@@ -246,7 +274,8 @@ void RbmLearner::update_W() {
 }
 
 void RbmLearner::train() {
-    int user, rating, movie, predict, err, train_count, train_err, numer, denom;
+    int user, rating, movie, train_count;
+    double predict, err, train_err, numer, denom;
     time_t start, end;
 
     for (unsigned int i = 0; i < RBM_EPOCHS; ++i) {
@@ -257,7 +286,8 @@ void RbmLearner::train() {
         train_err = 0;
         train_count = 0;
 
-        if (i % 100 == 0 && i != 0) {
+        // how good are we doing yo
+        if (i % 1 == 0) {
             for(unsigned int j = 0; j < TRAIN_SIZE; ++j) {
                 user = this->reader->train_set[j][USER_COL];
                 movie = this->reader->train_set[j][MOVIE_COL];
@@ -284,8 +314,8 @@ void RbmLearner::train() {
             }
 
             time(&end);
-            printf("Train RMSE: %f. Took %.f seconds.\n",
-                sqrt(train_err / (double) TRAIN_SIZE), difftime(end, start));
+            printf("Train Error: %f. Took %.f seconds.\n",
+                sqrt(train_err / ((double) TRAIN_SIZE)), difftime(end, start));
         } else {
             time(&end);
             printf("Took %.f seconds.\n", difftime(end, start));

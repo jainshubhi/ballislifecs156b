@@ -34,7 +34,7 @@
 // place holder for filenames
 #define VOID_FILE  "x"
 
-// files for initial biases
+// files for initial biases & counts
 #define AVG_USER_RATING   "gen/avg_user_rating.txt"
 #define CNT_USER_RATING   "gen/cnt_user_rating.txt"
 #define AVG_USER_DATE     "gen/avg_user_date.txt"
@@ -79,7 +79,7 @@
 #define ALPHA  0.1 // still figuring out what this is
 
 // constants regarding rbm
-#define NUM_FACTORS    100
+#define NUM_FACTORS    50
 #define NUM_RATINGS    5
 #define LEARNING_RATE  0.1
 #define MINIBATCH_SIZE 100

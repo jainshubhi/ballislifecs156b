@@ -24,6 +24,7 @@ int main() {
         count_user_rating[i] = 0;
         avg_user_date[i] = 0;
         count_user_unique_dates[i] = 0;
+        user_offset[i] = 0;
     }
 
     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
