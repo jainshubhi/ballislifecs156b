@@ -55,6 +55,8 @@
 #define QUAL_SIZE   2749898
 #define NUM_USERS   458293
 #define NUM_MOVIES  17770
+// #define NUM_USERS   6
+// #define NUM_MOVIES  5
 #define AVG_RATING  3.609516
 
 // constants regarding learning

@@ -227,9 +227,9 @@ void RbmLearner::update_W() {
         size = this->count_user_rating[user];
         for (unsigned int j = 0; j < size; ++j) {
             for (unsigned int k = 0; k < NUM_FACTORS; ++k) {
-                for (unsigned int k = 1; k <= NUM_RATINGS; ++k) {
-                    if (V[j][k] == 1) {
-                        rating = V[j][k];
+                for (unsigned int l = 1; l <= NUM_RATINGS; ++l) {
+                    if (V[j][l] == 1) {
+                        rating = l;
                         break;
                     }
                 }
@@ -289,10 +289,11 @@ void RbmLearner::train() {
         update_W();
         train_err = 0;
         train_count = 0;
+        int size = user_offset[NUM_USERS - 1] + count_user_rating[NUM_USERS - 1];
 
         // how good are we doing yo
         if (i % 2  == 0) {
-            for(unsigned int j = 0; j < TRAIN_SIZE; ++j) {
+            for(unsigned int j = 0; j < size; ++j) {
                 user = this->reader->train_set[j][USER_COL];
                 movie = this->reader->train_set[j][MOVIE_COL];
                 rating = this->reader->train_set[j][RATING_COL];
@@ -306,9 +307,7 @@ void RbmLearner::train() {
                         denom += exp(sum_over_features(movie, l, this->h_u[user]));
                     }
                     predict += (numer / denom) * k;
-                    out_file << numer;
-                    out_file << ", ";
-                    out_file << denom;
+                    out_file << predict;
                     out_file << "\n";
                 }
 
@@ -327,7 +326,7 @@ void RbmLearner::train() {
             out_file.close();
             time(&end);
             printf("Train Error: %f. Took %.f seconds.\n",
-                sqrt(train_err / ((double) TRAIN_SIZE)), difftime(end, start));
+                sqrt(train_err / ((double) size)), difftime(end, start));
         } else {
             time(&end);
             printf("Took %.f seconds.\n", difftime(end, start));
