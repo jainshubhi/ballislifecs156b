@@ -35,6 +35,9 @@ RbmLearner::RbmLearner() {
         this->W[i] = new double*[NUM_FACTORS];
         for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
             this->W[i][j] = new double[NUM_RATINGS];
+            for (unsigned int k = 0; k < NUM_RATINGS; ++k) {
+                this->W[i][j][k] = one_rand();
+            }
         }
     }
 
@@ -195,10 +198,8 @@ void RbmLearner::update_h(double* h, int user, bool last, double threshold) {
 }
 
 void RbmLearner::create_minibatch() {
-    int val = 0;
     for (unsigned int i = 0; i < MINIBATCH_SIZE; ++i) {
-        val = minibatch_random();
-        minibatch[i] = val;
+        minibatch[i] = i;
     }
 }
 
@@ -278,6 +279,9 @@ void RbmLearner::train() {
     double predict, err, train_err, numer, denom;
     time_t start, end;
 
+    ofstream out_file;
+    out_file.open("./rbm_train.txt");
+
     for (unsigned int i = 0; i < RBM_EPOCHS; ++i) {
         time(&start);
         printf("Epoch Number: %d.\n", i);
@@ -287,7 +291,7 @@ void RbmLearner::train() {
         train_count = 0;
 
         // how good are we doing yo
-        if (i % 1 == 0) {
+        if (i % 2  == 0) {
             for(unsigned int j = 0; j < TRAIN_SIZE; ++j) {
                 user = this->reader->train_set[j][USER_COL];
                 movie = this->reader->train_set[j][MOVIE_COL];
@@ -302,6 +306,10 @@ void RbmLearner::train() {
                         denom += exp(sum_over_features(movie, l, this->h_u[user]));
                     }
                     predict += (numer / denom) * k;
+                    out_file << numer;
+                    out_file << ", ";
+                    out_file << denom;
+                    out_file << "\n";
                 }
 
                 predict = bound(predict);
@@ -310,9 +318,13 @@ void RbmLearner::train() {
 
                 train_err += err * err;
 
+                if (j % 10000 == 0)
+                    printf("Training error: %f. Index: %d.\n", train_err, j);
+
                 train_count++;
             }
 
+            out_file.close();
             time(&end);
             printf("Train Error: %f. Took %.f seconds.\n",
                 sqrt(train_err / ((double) TRAIN_SIZE)), difftime(end, start));
