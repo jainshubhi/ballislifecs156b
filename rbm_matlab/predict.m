@@ -1,7 +1,7 @@
 function [ preds ] = predict( data, user, W )
 %UNTITLED9 Summary of this function goes here
 %   Detailed explanation goes here
-    [movies, ~, ~] = size(W);
+    movies = size(W, 1) - 1;
     V = create_v(data{user});
     h = h_calc(V, W);
     new_V = v_calc(h, W);

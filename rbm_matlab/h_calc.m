@@ -1,7 +1,8 @@
 function [ h ] = h_calc( V, W )
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
-[movies, F, ~] = size(W);
+movies = size(W, 1) - 1;
+F = size(W, 2) - 1;
 h = zeros(1, F);
 for j = 1:F
     sum = 0;
@@ -11,5 +12,7 @@ for j = 1:F
         end
     end
     h(j) = 1/(1+exp(-sum));
+end
+h(F+1) = 1;
 end
 
