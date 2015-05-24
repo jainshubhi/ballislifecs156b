@@ -1,8 +1,9 @@
 function [ V ] = v_calc( h, W )
 %UNTITLED8 Summary of this function goes here
 %   Detailed explanation goes here
-[movies, F, ~] = size(W);
-V = zeros(5, movies);
+movies = size(W, 1) - 1;
+F = size(W, 2) - 1;
+V = zeros(5, movies+1);
 for i = 1:movies
     for k = 1:5
         num = 0;
@@ -20,5 +21,6 @@ for i = 1:movies
         V(k, i) = exp(num)/den;
     end
 end
+V(:, movies+1) = 1;
 end
 
