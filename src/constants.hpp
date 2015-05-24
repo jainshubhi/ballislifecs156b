@@ -83,6 +83,6 @@
 // constants regarding rbm
 #define NUM_FACTORS    50
 #define NUM_RATINGS    5
-#define LEARNING_RATE  0.1
+#define LEARNING_RATE  0.001
 #define MINIBATCH_SIZE 100
 #define RBM_EPOCHS     5000
