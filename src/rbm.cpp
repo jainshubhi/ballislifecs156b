@@ -102,13 +102,14 @@ double RbmLearner::sum_over_features(int movie, int rating, double* h) {
 }
 
 // expected value for each user
-double** RbmLearner::p_calc_v(int** V, double* h, int user) {
+double** RbmLearner::p_calc_v(double** V, double* h, int user) {
     int index = this->user_offset[user],
         count = this->count_user_rating[user],
-        movie, e_value;
-    double numer, denom = 0;
+        movie;
+    double numer, denom, e_value = 0;
     // determine most likely
     for (unsigned int i = 0; i < count; ++i) {
+        denom = 0;
         movie = this->reader->train_set[index + i][MOVIE_COL];
         for (unsigned int j = 1; j <= NUM_RATINGS; ++j) {
             numer = exp(sum_over_features(movie, j, h));
@@ -118,6 +119,15 @@ double** RbmLearner::p_calc_v(int** V, double* h, int user) {
             V[i][j] = numer / denom;
         }
     }
+    double sum = 0;
+    for (unsigned int i = 0; i < count; ++i) {
+        for (unsigned int j = 1; j <= NUM_RATINGS; ++j) {
+            sum += V[i][j];
+        }
+        printf("Sum is %f.\n", sum);
+        sum = 0;
+    }
+
     // stored as movie count x 2 array
     double**v = new double*[count];
     for (unsigned int i = 0; i < count; ++i) {
@@ -130,7 +140,7 @@ double** RbmLearner::p_calc_v(int** V, double* h, int user) {
 }
 
 // update v
-void RbmLearner::update_V(int** V, double** v, int user) {
+void RbmLearner::update_V(double** V, double** v, int user) {
     int count = this->count_user_rating[user];
     for(unsigned int i = 0; i < count; ++i) {
         V[i][1] = bound(v[i][1]);
@@ -138,15 +148,15 @@ void RbmLearner::update_V(int** V, double** v, int user) {
 }
 
 // create V
-int** RbmLearner::create_v(int user) {
+double** RbmLearner::create_v(int user) {
     int index = this->user_offset[user],
         count = this->count_user_rating[user],
         movie, rating;
-    int** V = new int*[count];
+    double** V = new double*[count];
     // fill up V with movies/ratings
     for (unsigned int i = 0; i < count; ++i) {
         // initialize array
-        V[i] = new int[NUM_RATINGS + 1];
+        V[i] = new double[NUM_RATINGS + 1];
         // fill it up
         movie = this->reader->train_set[index + i][MOVIE_COL];
         rating = this->reader->train_set[index + i][RATING_COL];
@@ -159,7 +169,7 @@ int** RbmLearner::create_v(int user) {
 // fill up h with appropriate weight probabilities for each user
 // create is an integer which is 0 if this method is called after create_v and 1
 // otherwise
-double* RbmLearner::p_calc_h(int** V, int user, int create) {
+double* RbmLearner::p_calc_h(double** V, int user, int create) {
     double* h = new double[NUM_FACTORS];
     int term, movie, rating, count = this->count_user_rating[user];
     for (unsigned int i = 0; i < NUM_FACTORS; ++i) {
@@ -204,7 +214,7 @@ void RbmLearner::create_minibatch() {
 }
 
 void RbmLearner::update_W() {
-    int** V;
+    double** V;
     double **v;
     int user, size, rating;
     // create third order tensors
@@ -233,7 +243,7 @@ void RbmLearner::update_W() {
                         break;
                     }
                 }
-                exp_data[V[j][0]][k][rating - 1] += this->h_u[user][k];
+                exp_data[(int)V[j][0]][k][rating - 1] += this->h_u[user][k];
             }
         }
         // do it again for exp_recon
@@ -243,10 +253,15 @@ void RbmLearner::update_W() {
         update_h(this->h_u[user], user, false, one_rand());
         for (unsigned int j = 0; j < size; ++j) {
             for (unsigned int k = 0; k < NUM_FACTORS; ++k) {
-                exp_recon[V[j][0]][k][V[j][1] - 1] += this->h_u[user][k];
+                exp_recon[(int)V[j][0]][k][(int)V[j][1] - 1] += this->h_u[user][k];
             }
         }
     }
+    // update all h's
+    // for (unsigned int i = 0; i < NUM_USERS; ++i) {
+    //     update_h(this->h_u[i], i, false, one_rand());
+    // }
+
     // update W
     matrix_add(exp_data, exp_recon, NUM_MOVIES, NUM_FACTORS, NUM_RATINGS, -1);
     matrix_scalar_mult(exp_data, (LEARNING_RATE / size), NUM_MOVIES, NUM_FACTORS, NUM_RATINGS);
@@ -317,8 +332,8 @@ void RbmLearner::train() {
 
                 train_err += err * err;
 
-                if (j % 10000 == 0)
-                    printf("Training error: %f. Index: %d.\n", train_err, j);
+                // if (j % 10000 == 0)
+                //     printf("Training error: %f. Index: %d.\n", train_err, j);
 
                 train_count++;
             }

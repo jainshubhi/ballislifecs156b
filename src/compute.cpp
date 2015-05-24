@@ -42,6 +42,12 @@ double one_rand() {
     return num / 100000.0;
 }
 
+// returns a positive random int between 1 and 5
+int rating_rand() {
+    int num = ((int) rand() % 5);
+    return num + 1;
+}
+
 // returns random user for minibatch
 unsigned int minibatch_random() {
     return ((unsigned int) (rand() * 14)) % NUM_USERS;

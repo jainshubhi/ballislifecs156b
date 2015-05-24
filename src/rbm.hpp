@@ -16,10 +16,10 @@ public:
 
     void set_dr(DataReader * reader);
     double sum_over_features(int movie, int rating, double* h);
-    double** p_calc_v(int** V, double* h, int user);
-    void update_V(int** V, double** v, int user);
-    int** create_v(int user);
-    double* p_calc_h(int** V, int user, int create);
+    double** p_calc_v(double** V, double* h, int user);
+    void update_V(double** V, double** v, int user);
+    double** create_v(int user);
+    double* p_calc_h(double** V, int user, int create);
     void update_h(double* h, int user, bool last, double threshold);
     void create_minibatch();
     void update_W();
