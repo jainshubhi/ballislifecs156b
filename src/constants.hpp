@@ -28,8 +28,8 @@
 #define KNN_BLEND  "pred/knn_blend.txt"
 #define KNN_QUAL   "pred/knn_qual.txt"
 // rbm
-#define RBM_BLEND  "pred/rbm_blend_e100_f50_l0001_bias.txt"
-#define RBM_QUAL   "pred/rbm_qual_e100_f50_l0001_bias.txt"
+#define RBM_BLEND  "pred/rbm_blend_e100_f35_l0001_bias.txt"
+#define RBM_QUAL   "pred/rbm_qual_e100_f35_l0001_bias.txt"
 
 // place holder for filenames
 #define VOID_FILE  "x"

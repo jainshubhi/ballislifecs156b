@@ -152,7 +152,7 @@ double* RbmLearner2::h_calc(double ** V, int user) {
                 sum += V[i - index][k] * W[movie][j][k - 1];
             }
         }
-        h[j] = 1.0 / (1 + exp(-1.0 * (sum))); // + b_bias[j])));
+        h[j] = 1.0 / (1 + exp(-1.0 * (sum + b_bias[j])));
     }
     return h;
 }
@@ -218,14 +218,14 @@ double ** RbmLearner2::v_calc(double * h, int user) {
             for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
                 num += h[j] * W[movie][j][k - 1];
             }
-            // num += B_bias[movie][k - 1];
+            num += B_bias[movie][k - 1];
             for (unsigned int l = 1; l <= NUM_RATINGS; ++l) {
                 temp = 0;
                 for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
                     temp += h[j] * W[movie][j][l - 1];
                 }
-                denom += exp(temp);
-                // denom += exp(temp + B_bias[movie][l - 1]);
+                // denom += exp(temp);
+                denom += exp(temp + B_bias[movie][l - 1]);
             }
             V[i][k] = exp(num) / denom;
         }
@@ -241,14 +241,14 @@ double RbmLearner2::predict(double * h, int movie) {
         for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
             num += h[j] * W[movie][j][k - 1];
         }
-        // num += B_bias[movie][k - 1];
+        num += B_bias[movie][k - 1];
         for (unsigned int l = 0; l < NUM_RATINGS; ++l) {
             temp = 0;
             for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
                 temp += h[j] * W[movie][j][l];
             }
-            // denom += exp(temp + B_bias[movie][l]);
-            denom += exp(temp);
+            denom += exp(temp + B_bias[movie][l]);
+            // denom += exp(temp);
         }
         prediction += k * exp(num) / denom;
     }
@@ -312,20 +312,20 @@ void RbmLearner2::train() {
             matrix_scalar_mult(grad, 1/(u + 1), NUM_MOVIES, NUM_FACTORS, NUM_RATINGS);
 
             // Bias gradient
-            // matrix_scalar_mult(B_grad, u, NUM_MOVIES, NUM_RATINGS);
-            // matrix_add(V, new_V, count, NUM_RATINGS, -1);
-            // for (unsigned int i = 0; i < count; ++i) {
-            //     for (unsigned int k = 0; k < NUM_RATINGS; ++k) {
-            //         B_grad[(int)V[i][0]][k] += V[i][k + 1];
-            //     }
-            // }
-            // matrix_scalar_mult(B_grad, 1/(u + 1), NUM_MOVIES, NUM_RATINGS);
-            //
-            // for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
-            //     b_grad[j] *= u;
-            //     b_grad[j] += h[j] - new_h[j];
-            //     b_grad[j] /= u + 1;
-            // }
+            matrix_scalar_mult(B_grad, u, NUM_MOVIES, NUM_RATINGS);
+            matrix_add(V, new_V, count, NUM_RATINGS, -1);
+            for (unsigned int i = 0; i < count; ++i) {
+                for (unsigned int k = 0; k < NUM_RATINGS; ++k) {
+                    B_grad[(int)V[i][0]][k] += V[i][k + 1];
+                }
+            }
+            matrix_scalar_mult(B_grad, 1/(u + 1), NUM_MOVIES, NUM_RATINGS);
+
+            for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
+                b_grad[j] *= u;
+                b_grad[j] += h[j] - new_h[j];
+                b_grad[j] /= u + 1;
+            }
             // printf("did bias gradient.\n");
             // calculate prediction
             for (unsigned int i = 0; i < count; ++i) {
@@ -382,11 +382,11 @@ void RbmLearner2::train() {
         // take gradient step for W & biases
         matrix_scalar_mult(grad, LEARNING_RATE, NUM_MOVIES, NUM_FACTORS, NUM_RATINGS);
         matrix_add(W, grad, NUM_MOVIES, NUM_FACTORS, NUM_RATINGS, 1);
-        // matrix_scalar_mult(B_grad, LEARNING_RATE, NUM_MOVIES, NUM_RATINGS);
-        // matrix_add(B_bias, B_grad, NUM_MOVIES, NUM_RATINGS, 1);
-        // for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
-        //     b_bias[j] += LEARNING_RATE * b_grad[j];
-        // }
+        matrix_scalar_mult(B_grad, LEARNING_RATE, NUM_MOVIES, NUM_RATINGS);
+        matrix_add(B_bias, B_grad, NUM_MOVIES, NUM_RATINGS, 1);
+        for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
+            b_bias[j] += LEARNING_RATE * b_grad[j];
+        }
         // printf("Took gradient stuff.\n");
         // checking NaN stuff
         if (W[0][0][0] != W[0][0][0]) {
@@ -442,6 +442,8 @@ void RbmLearner2::pred(string predictions, bool is_qual, bool write) {
             h = h_calc(V, user);
 
             pre = bound(predict(h, movie));
+
+            temp = user;
         }
         else {
             pre = bound(predict(h, movie));
