@@ -252,7 +252,7 @@ void RbmLearner2::create_minibatch() {
 void RbmLearner2::train() {
     // initialize variables
     int user, rating, movie, index, count, total_count = 0;
-    double pre, err, train_err, squares;
+    double pre, err, train_err; //, squares;
     time_t start, end;
 
     // learn W
@@ -311,8 +311,6 @@ void RbmLearner2::train() {
             //     b_grad[j] /= u + 1;
             // }
 
-            // Sum all V
-
             // calculate prediction
             for (unsigned int i = 0; i < count; ++i) {
                 movie = this->reader->train_set[index + i][MOVIE_COL];
@@ -331,18 +329,17 @@ void RbmLearner2::train() {
             //     squares = total_matrix_sum(new_V, count, NUM_RATINGS);
             //     printf("Sum of squares is %f\n", squares);
             // }
-
-            if (u <= MINIBATCH_SIZE - 1) {
-                squares = 0;
-                for (unsigned int i = 0; i < count; ++i) {
-                    for (unsigned int k = 1; k <= NUM_RATINGS; ++k) {
-                        // printf("new_V is %f.\n", new_V[i][k]);
-                        // printf("V is %f.\n", V[i][k]);
-                        squares += (new_V[i][k] - V[i][k]) * (new_V[i][k] - V[i][k]);
-                    }
-                }
-                printf("Sum of squares is %f\n", squares);
-            }
+            //
+            // if (u <= MINIBATCH_SIZE - 1) {
+            //     squares = 0;
+            //     for (unsigned int i = 0; i < count; ++i) {
+            //         for (unsigned int k = 1; k <= NUM_RATINGS; ++k) {
+            //             // printf("new_V is %f.\n", new_V[i][k]);
+            //             // printf("V is %f.\n", V[i][k]);
+            //             squares += (new_V[i][k] - V[i][k]) * (new_V[i][k] - V[i][k]);
+            //         }
+            //     }
+            // }
 
             // delete all this stuff
             for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
