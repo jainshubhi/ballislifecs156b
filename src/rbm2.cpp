@@ -212,6 +212,10 @@ double ** RbmLearner::v_calc(double * h, int user) {
     return V;
 }
 
+void train() {
+    
+}
+
 // double * predict(int user) {
 //     double ** V, ** new_V, * preds;
 //     double * h;
