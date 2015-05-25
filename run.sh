@@ -8,7 +8,7 @@ make all
 # ./bin/svd
 # ./bin/knn
 # this is not implemented yet
-./bin/rbm
+./bin/rbm2
 
 # run blender
 ./bin/blender

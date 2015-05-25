@@ -28,8 +28,8 @@
 #define KNN_BLEND  "pred/knn_blend.txt"
 #define KNN_QUAL   "pred/knn_qual.txt"
 // rbm
-#define RBM_BLEND  "pred/rbm_blend.txt"
-#define RBM_QUAL   "pred/rbm_qual.txt"
+#define RBM_BLEND  "pred/rbm_blend_e100_f50_l0001_bias.txt"
+#define RBM_QUAL   "pred/rbm_qual_e100_f50_l0001_bias.txt"
 
 // place holder for filenames
 #define VOID_FILE  "x"
@@ -79,8 +79,8 @@
 #define ALPHA  0.1 // still figuring out what this is
 
 // constants regarding rbm
-#define NUM_FACTORS    50
+#define NUM_FACTORS    35
 #define NUM_RATINGS    5
 #define LEARNING_RATE  0.0001
 #define MINIBATCH_SIZE 100
-#define RBM_EPOCHS     5000
+#define RBM_EPOCHS     100

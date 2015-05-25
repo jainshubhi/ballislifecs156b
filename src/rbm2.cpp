@@ -42,12 +42,23 @@ RbmLearner2::RbmLearner2() {
     this->B_bias = new double*[NUM_MOVIES];
     this->b_bias = new double[NUM_FACTORS];
 
+    for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
+        this->b_bias[j] = one_rand();
+        this->b_grad[j] = 0;
+    }
+
     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
         this->W[i] = new double*[NUM_FACTORS];
         this->grad[i] = new double*[NUM_FACTORS];
 
         this->B_grad[i] = new double[NUM_RATINGS];
         this->B_bias[i] = new double[NUM_RATINGS];
+
+        for (unsigned int k = 0; k < NUM_RATINGS; ++k) {
+            this->B_bias[i][k] = one_rand();
+            this->B_grad[i][k] = 0;
+        }
+
         for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
             this->W[i][j] = new double[NUM_RATINGS];
             this->grad[i][j] = new double[NUM_RATINGS];
@@ -189,7 +200,7 @@ double *** RbmLearner2::exp_calc(double ** V, double * h, int user) {
 
 double ** RbmLearner2::v_calc(double * h, int user) {
     int index = this->user_offset[user],
-        count = this->count_user_rating[user];
+        count = this->count_user_rating[user], movie;
     double num, denom, temp;
     double ** V = new double*[count];
     for (unsigned int i = 0; i < count; ++i) {
@@ -200,20 +211,21 @@ double ** RbmLearner2::v_calc(double * h, int user) {
     }
     for (unsigned int i = 0; i < count; ++i) {
         V[i][0] = this->reader->train_set[index + i][MOVIE_COL];
+        movie = V[i][0];
         for (unsigned int k = 1; k <= NUM_RATINGS; ++k) {
             num = 0;
             denom = 0;
             for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
-                num += h[j] * W[(int)V[i][0]][j][k - 1];
+                num += h[j] * W[movie][j][k - 1];
             }
-            // num += B_bias[(int)V[i][0]][k - 1];
+            // num += B_bias[movie][k - 1];
             for (unsigned int l = 1; l <= NUM_RATINGS; ++l) {
                 temp = 0;
                 for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
-                    temp += h[j] * W[(int)V[i][0]][j][l - 1];
+                    temp += h[j] * W[movie][j][l - 1];
                 }
                 denom += exp(temp);
-                // denom += exp(temp + B_bias[int(V[i][0])][l - 1]);
+                // denom += exp(temp + B_bias[movie][l - 1]);
             }
             V[i][k] = exp(num) / denom;
         }
@@ -229,13 +241,13 @@ double RbmLearner2::predict(double * h, int movie) {
         for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
             num += h[j] * W[movie][j][k - 1];
         }
-        // num += B_bias[(int)V[i][0]][k - 1];
+        // num += B_bias[movie][k - 1];
         for (unsigned int l = 0; l < NUM_RATINGS; ++l) {
             temp = 0;
             for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
                 temp += h[j] * W[movie][j][l];
             }
-            // denom += exp(temp + B_bias[int(V[i][0])][l - 1]);
+            // denom += exp(temp + B_bias[movie][l]);
             denom += exp(temp);
         }
         prediction += k * exp(num) / denom;
@@ -267,8 +279,10 @@ void RbmLearner2::train() {
                 }
             }
         }
+        // printf("Initialized gradient.\n");
         train_err = 0;
         create_minibatch();
+        // printf("Created minibatch.\n");
         for (unsigned int u = 0; u < MINIBATCH_SIZE; ++u) {
             double ** V, ** new_V, * h, * c_h, * new_h, * c_new_h,
                 *** exp_data, *** exp_recon;
@@ -278,11 +292,13 @@ void RbmLearner2::train() {
             total_count += count;
             V = create_v(user);
             h = h_calc(V, user);
+            // printf("h_calc.\n");
             // binary values of h
             c_h = copy_h(h);
             threshold_h(c_h);
             exp_data = exp_calc(V, c_h, user);
             new_V = v_calc(h, user);
+            // printf("v_calc.\n");
             // Reconstruct h
             new_h = h_calc(new_V, user);
             c_new_h = copy_h(new_h);
@@ -310,13 +326,13 @@ void RbmLearner2::train() {
             //     b_grad[j] += h[j] - new_h[j];
             //     b_grad[j] /= u + 1;
             // }
-
+            // printf("did bias gradient.\n");
             // calculate prediction
             for (unsigned int i = 0; i < count; ++i) {
                 movie = this->reader->train_set[index + i][MOVIE_COL];
                 rating = this->reader->train_set[index + i][RATING_COL];
 
-                pre = bound(predict(new_h, movie));
+                pre = bound(predict(h, movie));
 
                 err = rating - pre;
                 train_err += err * err;
@@ -371,7 +387,7 @@ void RbmLearner2::train() {
         // for (unsigned int j = 0; j < NUM_FACTORS; ++j) {
         //     b_bias[j] += LEARNING_RATE * b_grad[j];
         // }
-
+        // printf("Took gradient stuff.\n");
         // checking NaN stuff
         if (W[0][0][0] != W[0][0][0]) {
             printf("RBM Nan-s at Epoch %d.\n", e);
@@ -385,8 +401,9 @@ void RbmLearner2::train() {
 }
 
 void RbmLearner2::pred(string predictions, bool is_qual, bool write) {
-    int user, movie, count, size;
+    int user, temp = 0, movie, count, size;
     double pre, train_err = 0.0, err;
+    double * h, ** V;
     ofstream outfile;
 
     int ** data;
@@ -406,21 +423,30 @@ void RbmLearner2::pred(string predictions, bool is_qual, bool write) {
     }
 
     for (unsigned int i = 0; i < size; ++i) {
-        double * h, ** V, * new_h, ** new_V;
         user = data[i][USER_COL];
         movie = data[i][MOVIE_COL];
+        if (temp != user) {
+            if (i != 0) {
+                // delete matrices/vectors
+                for (unsigned int i = 0; i < count; ++i) {
+                    delete[] V[i];
+                }
+                delete[] h;
 
-        // get info for current user and date if needed
-        count = this->count_user_rating[user];
-        V = create_v(user);
-        h = h_calc(V, user);
-        // binary values of h
-        new_V = v_calc(h, user);
-        // Reconstruct h
-        new_h = h_calc(new_V, user);
+                double * h, ** V;
+            }
 
-        // calculate prediction
-        pre = bound(predict(new_h, movie));
+            // get info for current user and date if needed
+            count = this->count_user_rating[user];
+            V = create_v(user);
+            h = h_calc(V, user);
+
+            pre = bound(predict(h, movie));
+        }
+        else {
+            pre = bound(predict(h, movie));
+        }
+
 
         // if blend set, then calculate the error
         if (!is_qual) {
@@ -433,14 +459,6 @@ void RbmLearner2::pred(string predictions, bool is_qual, bool write) {
             outfile << pre;
             outfile << "\n";
         }
-
-        // delete matrices/vectors
-        for (unsigned int i = 0; i < count; ++i) {
-            delete[] V[i];
-            delete[] new_V[i];
-        }
-        delete[] h;
-        delete[] new_h;
     }
 
     if (write) {
