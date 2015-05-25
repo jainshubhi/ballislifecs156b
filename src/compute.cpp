@@ -167,7 +167,7 @@ double frobenius_norm(double *** matrix, unsigned int r, unsigned int c, unsigne
 void matrix_add(double ** mat_1, double ** mat_2, unsigned int r, unsigned int c, int sign) {
     for (unsigned int i = 0; i < r; ++i) {
         for (unsigned int j = 0; j < c; ++j) {
-            mat_1[i][j] = mat_1[i][j] - (sign * mat_2[i][j]);
+            mat_1[i][j] = mat_1[i][j] + (sign * mat_2[i][j]);
         }
     }
 }
@@ -180,6 +180,35 @@ void matrix_add(double *** mat_1, double *** mat_2, unsigned int r, unsigned int
             for(unsigned int k = 0; k < h; ++k) {
                 mat_1[i][j][k] = mat_1[i][j][k] + (sign * mat_2[i][j][k]);
             }
+        }
+    }
+}
+
+// square everything in 2d matrix
+void matrix_square(double ** mat, unsigned int r, unsigned int c) {
+    for (unsigned int i = 0; i < r; ++i) {
+        for (unsigned int j = 0; j < c; ++j) {
+            mat[i][j] = mat[i][j] * mat[i][j];
+        }
+    }
+}
+
+// sum all elements in 2d matrix
+double total_matrix_sum(double ** mat, unsigned int r, unsigned int c) {
+    double sum = 0;
+    for (unsigned int i = 0; i < r; ++i) {
+        for (unsigned int j = 0; j < c; ++j) {
+            sum += mat[i][j];
+        }
+    }
+    return sum;
+}
+
+// scalar multiplication of a double 2d matrix
+void matrix_scalar_mult(double ** mat_1, double scalar, unsigned int r, unsigned int c) {
+    for (unsigned int i = 0; i < r; ++i) {
+        for (unsigned int j = 0; j < c; ++j) {
+                mat_1[i][j] *= scalar;
         }
     }
 }

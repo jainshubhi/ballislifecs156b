@@ -126,6 +126,7 @@ double** RbmLearner::p_calc_v(double** V, double* h, int user) {
         }
         sum = 0;
     }
+    printf("Sum is %f.\n", sum);
     // they all sum 0.45/0.46. None of them add to 1 like they should.
 
     // stored as movie count x 2 array
@@ -250,6 +251,10 @@ void RbmLearner::update_W() {
         v = p_calc_v(V, this->h_u[user], user);
         update_V(V, v, user);
         this->h_u[user] = p_calc_h(V, user, 1);
+        // What's in h_u[0]
+        for (unsigned int i = 0; i < NUM_FACTORS; ++i) {
+            printf("h for user 0 after calculating is %f.\n", h_u[0][i]);
+        }
         update_h(this->h_u[user], user, false, one_rand());
         for (unsigned int j = 0; j < size; ++j) {
             for (unsigned int k = 0; k < NUM_FACTORS; ++k) {
@@ -260,6 +265,11 @@ void RbmLearner::update_W() {
     // update all h's
     for (unsigned int i = 0; i < NUM_USERS; ++i) {
         update_h(this->h_u[i], i, false, one_rand());
+    }
+
+    // What's in h_u[0]
+    for (unsigned int i = 0; i < NUM_FACTORS; ++i) {
+        printf("h for user 0 after updating is %f.\n", h_u[0][i]);
     }
 
     // update W
@@ -304,7 +314,7 @@ void RbmLearner::train() {
         update_W();
         train_err = 0;
         train_count = 0;
-        int size = user_offset[NUM_USERS - 1] + count_user_rating[NUM_USERS - 1];
+        int size = count_user_rating[0];
 
         // how good are we doing yo
         if (i % 2  == 0) {

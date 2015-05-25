@@ -8,37 +8,48 @@
 #include "compute.cpp"
 #endif
 
-class RbmLearner {
+class RbmLearner2 {
 public:
 
-    RbmLearner();
-    ~RbmLearner();
+    RbmLearner2();
+    ~RbmLearner2();
 
     void set_dr(DataReader * reader);
-    double** create_V(int user);
+    double** create_v(int user);
     double* h_calc(double ** V, int user);
     double * copy_h(double * h);
     void threshold_h(double * h);
     double *** exp_calc(double ** V, double * h, int user);
     double expected_val();
     double** v_calc(double * h, int user);
-    // double * predict(int user);
-    // double rmse();
+    void create_minibatch();
+    double predict(double * h, int movie);
     void train();
+    void pred(string predictions, bool is_qual, bool write);
 
 private:
     // third order tensor
-    double*** W;
-    double*** grad;
+    double *** W;
+    // gradients
+    double *** grad;
+    // gradient for B
+    double ** B_grad;
+    // gradient for h_b
+    double * b_grad;
 
-    // 100 users
-    int* minibatch;
+    // global bias for visible states
+    double ** B_bias;
+    // global bias for hidden states
+    double * b_bias;
 
     // number of movies each user has rated
     int* count_user_rating;
 
     // index at which user appears in training set
     int* user_offset;
+
+    // minibatch
+    int * minibatch;
 
     // data reader
     DataReader * reader;

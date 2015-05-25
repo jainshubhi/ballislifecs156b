@@ -6,7 +6,7 @@ OBJ = obj
 BIN = bin
 GEN = gen
 
-all: averages svd knn rbm blender
+all: averages svd knn rbm2 blender
 
 test: all clean
 
@@ -28,11 +28,11 @@ $(OBJ)/knn.o:  $(SRC)/knn.cpp $(SRC)/knn.hpp $(SRC)/DataReader.hpp $(SRC)/comput
 	$(CXX) -c $(CXXFLAGS) $(SRC)/knn.cpp -o $(OBJ)/knn.o
 	$(CXX) $(OBJ)/knn.o -o $(BIN)/knn
 
-rbm: $(OBJ)/rbm.o
+rbm2: $(OBJ)/rbm2.o
 
-$(OBJ)/rbm.o:  $(SRC)/rbm.cpp $(SRC)/rbm.hpp $(SRC)/DataReader.hpp $(SRC)/compute.cpp $(SRC)/constants.hpp
-	$(CXX) -c $(CXXFLAGS) $(SRC)/rbm.cpp -o $(OBJ)/rbm.o
-	$(CXX) $(OBJ)/rbm.o -o $(BIN)/rbm
+$(OBJ)/rbm2.o:  $(SRC)/rbm2.cpp $(SRC)/rbm2.hpp $(SRC)/DataReader.hpp $(SRC)/compute.cpp $(SRC)/constants.hpp
+	$(CXX) -c $(CXXFLAGS) $(SRC)/rbm2.cpp -o $(OBJ)/rbm2.o
+	$(CXX) $(OBJ)/rbm2.o -o $(BIN)/rbm2
 
 blender: $(OBJ)/blender.o
 
