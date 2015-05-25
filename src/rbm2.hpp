@@ -22,8 +22,8 @@ public:
     double *** exp_calc(double ** V, double * h, int user);
     double expected_val();
     double** v_calc(double * h, int user);
-    double * predict(int user);
-    double rmse();
+    // double * predict(int user);
+    // double rmse();
     void train();
 
 private:
