@@ -223,7 +223,7 @@ double ** RbmLearner::v_calc(double * h, int user) {
 //         preds[i] =
 //     }
 // }
-// 
+//
 // double rmse(double *** exp_recon) {
 //     int user, movie, rating;
 //     double err, total_err, rmse, predict;
