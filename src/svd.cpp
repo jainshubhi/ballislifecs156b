@@ -308,9 +308,9 @@ void SvdLearner::train() {
 
             predict = bound(predict);
 
-            // basic prediction formula
-            // ************************
-            predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+            if (BASIC_SVD) {
+                predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+            }
 
             err = (double) rating - predict;
 
@@ -418,9 +418,9 @@ void SvdLearner::pred(string predictions, bool is_qual, bool write) {
             + alpha * dev
             + user_time_b + feature_c;
 
-        // basic prediction formula
-        // ************************
-        predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+        if (BASIC_SVD) {
+            predict = AVG_RATING + user_bias[user] + movie_bias[movie] + feature_c;
+        }
 
         predict = bound(predict);
 

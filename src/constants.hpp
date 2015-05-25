@@ -20,10 +20,13 @@
 #define DATE_COL   2
 #define RATING_COL 3
 
+// whether or not basic SVD will be used instead of timeSVD++
+#define BASIC_SVD  1
+
 // files for blend and qual predictions
 // svd
-#define SVD_BLEND  "pred/svd_blend_f150_e20.txt"
-#define SVD_QUAL   "pred/svd_qual_f150_e20.txt"
+#define SVD_BLEND  "pred/pure_svd_blend_f200_e25.txt"
+#define SVD_QUAL   "pred/pure_svd_qual_f200_e25.txt"
 // knn
 #define KNN_BLEND  "pred/knn_blend.txt"
 #define KNN_QUAL   "pred/knn_qual.txt"
@@ -60,8 +63,8 @@
 // constants regarding learning
 #define FEAT_ADJ_RATE 0.015
 #define BIAS_ADJ_RATE 0.01
-#define NUM_FEATS     150
-#define NUM_EPOCHS    20
+#define NUM_FEATS     200
+#define NUM_EPOCHS    25
 #define TIME_BINS     30
 #define BIN_SIZE      75
 #define BETA          0.4
