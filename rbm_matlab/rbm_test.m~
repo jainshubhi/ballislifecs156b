@@ -61,7 +61,7 @@ for epoch = 1:50000
         grad = (grad*(i-1) + (exp_data - exp_recon))/i;
     end
     % Take a gradient step with learn rate and averaged over all users.
-    W = W + L*grad;  
+    W = W - L*grad;  
     if isnan(W(1,1,1))
         epoch
         break
@@ -73,7 +73,7 @@ for epoch = 1:50000
     end
     rmse(dummy, recon)
     %}
-    %sum(sum((new_V - V).^2))/movies
+    sum(sum((new_V - V).^2))
 end
 toc;
 %% Reconstruct and Find RMSE
