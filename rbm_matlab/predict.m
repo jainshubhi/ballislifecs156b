@@ -11,4 +11,3 @@ function [ preds ] = predict( data, user, W )
         preds(i, 2) = expected(new_V(:,i));
     end
 end
-

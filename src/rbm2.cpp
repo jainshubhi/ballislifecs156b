@@ -181,17 +181,57 @@ double ** RbmLearner::v_calc(double * h, int user) {
     int index = this->user_offset[user],
         count = this->count_user_rating[user];
     double num, denom, temp;
+    double ** V = new double*[count + 1];
     for (unsigned int i = 0; i <= count; ++i) {
-        for (unsigned int k = 1; k < NUM_RATINGS; ++k) {
+        V[i] = new double[NUM_RATINGS + 1];
+        V[i][0] = index;
+        for (unsigned int k = 1; k <= NUM_RATINGS; ++k) {
             num = 0;
             denom = 0;
             for (unsigned int j = 0; j <= NUM_FACTORS; ++j) {
-                num += h[j] * W[index + count][j][k - 1];
+                // bias unit (multiply by 1)
+                if (j == NUM_FACTORS || i == count)
+                    num += h[j];
+                else
+                    num += h[j] * W[index + i][j][k - 1];
             }
             for (unsigned int j = 1; j <= NUM_RATINGS; ++j) {
                 temp = 0;
-                for (unsigned int l = 1; l <= NUM_RATINGS)
+                for (unsigned int l = 0; l <= NUM_FACTORS; ++l) {
+                    // bias unit (multiply by 1)
+                    if (l == NUM_FACTORS || i == count)
+                        temp += h[l]
+                    else
+                        temp += h[l] * W[index + i][l][k - 1];
+                }
+                den += exp(temp);
             }
+            V[i][k] = exp(num) / den;
         }
     }
+    return V;
 }
+
+// double * predict(int user) {
+//     double ** V, ** new_V, * preds;
+//     double * h;
+//     V = create_v(user);
+//     h = h_calc(V, user);
+//     new_V = v_calc(h, user);
+//     preds = new double[NUM_MOVIES];
+//     for (unsigned int i = 0; i < NUM_MOVIES; ++i) {
+//         preds[i] =
+//     }
+// }
+// 
+// double rmse(double *** exp_recon) {
+//     int user, movie, rating;
+//     double err, total_err, rmse, predict;
+//     for (unsigned int i = 0; i < TRAIN_SIZE; ++i) {
+//         user = this->reader->train_set[i][USER_COL];
+//         movie = this->reader->train_set[i][MOVIE_COL];
+//         rating = this->reader->train_set[i][RATING_COL];
+//
+//         err = rating - exp_recon
+//     }
+// }
